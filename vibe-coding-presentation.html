@@ -1325,98 +1325,144 @@
         }
 
         /* 強化文字可讀性 */
-        body, .slide, .card, .comparison-table, .terminal-window, .ide-mockup {
+        body,
+        .slide,
+        .card,
+        .comparison-table,
+        .terminal-window,
+        .ide-mockup {
             color: #f5f6fa !important;
         }
-        h1, h2, h3, h4 {
+
+        h1,
+        h2,
+        h3,
+        h4 {
             color: #f5f6fa !important;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
         }
+
         .subtitle {
             color: #e0e3ea !important;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.12);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
         }
-        .feature-list li, .scenario-list li, .timeline-item, .exp-item, .project-item, .skill-badge {
+
+        .feature-list li,
+        .scenario-list li,
+        .timeline-item,
+        .exp-item,
+        .project-item,
+        .skill-badge {
             color: #f5f6fa !important;
         }
-        .comparison-table th, .comparison-table td {
+
+        .comparison-table th,
+        .comparison-table td {
             color: #f5f6fa !important;
         }
+
         .code-block {
             color: #eaf0fb !important;
             background: rgba(30, 41, 59, 0.92);
             text-shadow: none;
         }
+
         .highlight {
             color: #21243a !important;
             background: linear-gradient(120deg, #e0e3ea 0%, #b6c2e1 100%);
         }
+
         /* 毛玻璃區塊底色加深 */
         .slide {
             background: rgba(30, 41, 59, 0.82);
-            border: 1px solid rgba(255,255,255,0.10);
+            border: 1px solid rgba(255, 255, 255, 0.10);
         }
+
         .card {
             background: rgba(51, 65, 85, 0.85);
-            border-left: 3px solid rgba(59,130,246,0.7);
+            border-left: 3px solid rgba(59, 130, 246, 0.7);
         }
+
         .card:nth-child(2n) {
-            border-left-color: rgba(139,92,246,0.7);
+            border-left-color: rgba(139, 92, 246, 0.7);
         }
+
         .card:nth-child(3n) {
-            border-left-color: rgba(16,185,129,0.7);
+            border-left-color: rgba(16, 185, 129, 0.7);
         }
+
         .comparison-table {
             background: rgba(30, 41, 59, 0.88);
         }
-        .terminal-window, .ide-mockup {
+
+        .terminal-window,
+        .ide-mockup {
             background: rgba(30, 41, 59, 0.92);
         }
+
         /* 按鈕與導航點文字顏色加強 */
         .action-button {
             color: #f5f6fa !important;
-            background: rgba(59,130,246,0.18);
-            border: 1px solid rgba(59,130,246,0.35);
+            background: rgba(59, 130, 246, 0.18);
+            border: 1px solid rgba(59, 130, 246, 0.35);
         }
+
         .action-button.primary {
-            background: rgba(139,92,246,0.22);
-            border-color: rgba(139,92,246,0.45);
+            background: rgba(139, 92, 246, 0.22);
+            border-color: rgba(139, 92, 246, 0.45);
         }
+
         .nav-dot {
             background: #e0e3ea !important;
         }
+
         .nav-dot.active {
             background: #3b82f6 !important;
             box-shadow: 0 0 12px #3b82f6;
         }
+
         /* iOS 26 液態玻璃感保留 */
-        .slide, .card, .comparison-table, .terminal-window, .ide-mockup {
+        .slide,
+        .card,
+        .comparison-table,
+        .terminal-window,
+        .ide-mockup {
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.22), 0 1.5px 0 rgba(255,255,255,0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22), 0 1.5px 0 rgba(255, 255, 255, 0.08);
         }
-        h1, h2, h3 {
+
+        h1,
+        h2,
+        h3 {
             background: none !important;
             -webkit-background-clip: initial;
             background-clip: initial;
             -webkit-text-fill-color: initial;
         }
+
         /* 互動元素 hover 狀態加強 */
-        .card:hover, .action-button:hover, .nav-dot:hover {
-            box-shadow: 0 12px 40px rgba(59,130,246,0.18);
+        .card:hover,
+        .action-button:hover,
+        .nav-dot:hover {
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.18);
             border-left-color: #3b82f6 !important;
         }
+
         .action-button:hover {
-            background: rgba(59,130,246,0.28);
+            background: rgba(59, 130, 246, 0.28);
         }
+
         .action-button.primary:hover {
-            background: rgba(139,92,246,0.32);
+            background: rgba(139, 92, 246, 0.32);
         }
+
         /* 進度條顏色加強 */
         .progress-bar {
             background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
         }
+
         /* SF Pro 字體保留 */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
@@ -1986,7 +2032,7 @@
                                 <li>練習自然語言指令</li>
                                 <li>體驗不同的 AI 建議</li>
                             </ul>
-                                                       <div class="progress-indicator">
+                            <div class="progress-indicator">
                                 <div class="progress-bar-mini">
                                     <div class="progress-fill" style="width: 60%;"></div>
                                 </div>
