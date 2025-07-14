@@ -629,10 +629,282 @@
             background: rgba(255, 255, 255, 0.6);
         }
 
+        /* Demo 比較樣式 */
+        .demo-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .demo-section h3 {
+            font-size: 2.5rem;
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* CLI Window 樣式 */
+        .cli-window {
+            background: #1a1a1a;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .cli-header {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .cli-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27ca3f; }
+
+        .cli-title {
+            color: #e5e5e5;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .cli-body {
+            padding: 20px;
+            background: #1a1a1a;
+            min-height: 300px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .cli-line {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .prompt {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .path {
+            color: #3b82f6;
+            margin-right: 5px;
+        }
+
+        .cursor {
+            color: #ffffff;
+            margin-right: 10px;
+        }
+
+        .command {
+            color: #e5e5e5;
+        }
+
+        .cli-output {
+            color: #64748b;
+            margin: 5px 0 15px 0;
+            font-style: italic;
+        }
+
+        .terminal-cursor {
+            color: #22c55e;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .typing-text {
+            color: #e5e5e5;
+        }
+
+        /* IDE Window 樣式 */
+        .ide-window {
+            background: #1e1e1e;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 1px solid #333;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        }
+
+        .ide-header {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .ide-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .ide-title {
+            color: #e5e5e5;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .ide-content {
+            display: flex;
+            height: 300px;
+        }
+
+        .ide-sidebar {
+            width: 200px;
+            background: #252526;
+            border-right: 1px solid #444;
+            padding: 15px;
+        }
+
+        .sidebar-header {
+            color: #cccccc;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .file-tree {
+            font-size: 13px;
+        }
+
+        .folder, .file {
+            padding: 3px 0;
+            color: #cccccc;
+            cursor: pointer;
+        }
+
+        .file.active {
+            color: #ffffff;
+            background: #37373d;
+            padding: 3px 5px;
+            border-radius: 3px;
+        }
+
+        .ide-main {
+            flex: 1;
+            background: #1e1e1e;
+        }
+
+        .editor-tabs {
+            background: #2d2d30;
+            display: flex;
+            border-bottom: 1px solid #444;
+        }
+
+        .tab {
+            padding: 10px 16px;
+            background: #2d2d30;
+            color: #969696;
+            border-right: 1px solid #444;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .tab.active {
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .editor-content {
+            display: flex;
+            height: calc(100% - 41px);
+        }
+
+        .line-numbers {
+            background: #1e1e1e;
+            padding: 15px 10px;
+            color: #858585;
+            font-size: 13px;
+            line-height: 1.6;
+            border-right: 1px solid #444;
+            text-align: right;
+            min-width: 40px;
+        }
+
+        .code-area {
+            flex: 1;
+            padding: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .code-line {
+            margin: 2px 0;
+        }
+
+        .keyword { color: #569cd6; }
+        .variable { color: #9cdcfe; }
+        .function { color: #dcdcaa; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; font-style: italic; }
+
+        .ai-suggestion {
+            background: rgba(96, 165, 250, 0.1);
+            border-left: 3px solid #60a5fa;
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .ai-icon {
+            margin-right: 8px;
+        }
+
+        .suggestion {
+            color: #60a5fa;
+            font-style: italic;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .slide {
                 padding: 40px 20px;
+            }
+
+            .demo-comparison {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .demo-section h3 {
+                font-size: 2rem;
+            }
+
+            .cli-body {
+                min-height: 200px;
+                font-size: 12px;
+            }
+
+            .ide-content {
+                height: 250px;
+            }
+
+            .ide-sidebar {
+                width: 150px;
             }
 
             h1 {
@@ -769,8 +1041,10 @@
                     <span class="icon">💻</span>
                     <h4>CLI (命令列)</h4>
                     <div class="tools-section">
-                        <p class="section-title">🛠️ 常用工具：</p>
-                        <p>Terminal(終端機), PowerShell</p>
+                        <p class="section-title">🤖 AI CLI 工具：</p>
+                        <p><span class="highlight">Claude Code</span>, <span class="highlight">Gemini CLI</span></p>
+                        <p class="section-title">💻 傳統終端：</p>
+                        <p>Terminal, PowerShell</p>
                     </div>
                     <div class="workflow-section">
                         <p class="section-title">💡 開發方式：</p>
@@ -801,7 +1075,131 @@
                 </div>
             </div>
 
-            <div class="large-text" style="margin-top: 60px;">
+            <!-- Demo 視覺化比較 -->
+            <div class="demo-comparison" style="margin-top: 60px;">
+                <!-- CLI Demo -->
+                <div class="demo-section">
+                    <h3>💻 CLI 實際操作</h3>
+                    <div class="cli-demo">
+                        <div class="cli-window">
+                            <div class="cli-header">
+                                <div class="cli-dots">
+                                    <span class="dot red"></span>
+                                    <span class="dot yellow"></span>
+                                    <span class="dot green"></span>
+                                </div>
+                                <span class="cli-title">Terminal</span>
+                            </div>
+                            <div class="cli-body">
+                                <div class="cli-line">
+                                    <span class="prompt">user@mac:</span><span class="path">~/project</span><span class="cursor">$</span> <span class="command">mkdir vibe-app</span>
+                                </div>
+                                <div class="cli-line">
+                                    <span class="prompt">user@mac:</span><span class="path">~/project</span><span class="cursor">$</span> <span class="command">cd vibe-app</span>
+                                </div>
+                                <div class="cli-line">
+                                    <span class="prompt">user@mac:</span><span class="path">~/project/vibe-app</span><span class="cursor">$</span> <span class="command">npm init -y</span>
+                                </div>
+                                <div class="cli-output">Package.json created successfully!</div>
+                                <div class="cli-line">
+                                    <span class="prompt">user@mac:</span><span class="path">~/project/vibe-app</span><span class="cursor">$</span> <span class="command">code .</span>
+                                </div>
+                                <div class="cli-line typing">
+                                    <span class="prompt">user@mac:</span><span class="path">~/project/vibe-app</span><span class="cursor">$</span> <span class="typing-text"></span><span class="terminal-cursor">▋</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IDE Demo -->
+                <div class="demo-section">
+                    <h3>🎨 IDE 實際操作</h3>
+                    <div class="ide-demo">
+                        <div class="ide-window" style="position: relative;">
+                            <div class="ide-header">
+                                <div class="ide-dots">
+                                    <span class="dot red"></span>
+                                    <span class="dot yellow"></span>
+                                    <span class="dot green"></span>
+                                </div>
+                                <span class="ide-title">Cursor - vibe-app</span>
+                            </div>
+                            <div class="ide-content" style="height: 300px;">
+                                <div class="ide-sidebar">
+                                    <div class="sidebar-header">EXPLORER</div>
+                                    <div class="file-tree">
+                                        <div class="folder">📁 vibe-app</div>
+                                        <div class="file active">  📄 app.js</div>
+                                        <div class="file">  📄 package.json</div>
+                                        <div class="file">  📄 README.md</div>
+                                    </div>
+                                </div>
+                                <div class="ide-main" style="position: relative; display: flex; flex: 1;">
+                                    <div style="flex: 1; display: flex; flex-direction: column;">
+                                        <div class="editor-tabs">
+                                            <div class="tab active">app.js</div>
+                                            <div class="tab">package.json</div>
+                                        </div>
+                                        <div class="editor-content" style="flex: 1;">
+                                            <div class="line-numbers">
+                                                <span>1</span>
+                                                <span>2</span>
+                                                <span>3</span>
+                                                <span>4</span>
+                                                <span>5</span>
+                                            </div>
+                                            <div class="code-area">
+                                                <div class="code-line"><span class="keyword">const</span> <span class="variable">express</span> = <span class="function">require</span>(<span class="string">'express'</span>);</div>
+                                                <div class="code-line"><span class="keyword">const</span> <span class="variable">app</span> = <span class="function">express</span>();</div>
+                                                <div class="code-line"></div>
+                                                <div class="code-line"><span class="comment">// AI 建議：要不要加個路由？</span></div>
+                                                <div class="code-line ai-suggestion"><span class="ai-icon">🤖</span> <span class="suggestion">app.get('/', (req, res) => { ... }</span></div>
+                                            </div>
+                                        </div>
+                                        <!-- 新增終端機區塊 -->
+                                        <div class="cli-window" style="margin-top: 0; border-radius: 0 0 12px 12px; border-top: 1px solid #333;">
+                                            <div class="cli-header">
+                                                <div class="cli-dots">
+                                                    <span class="dot red"></span>
+                                                    <span class="dot yellow"></span>
+                                                    <span class="dot green"></span>
+                                                </div>
+                                                <span class="cli-title">Terminal</span>
+                                            </div>
+                                            <div class="cli-body" style="min-height: 60px; font-size: 13px;">
+                                                <div class="cli-line">
+                                                    <span class="prompt">PS D:\vibe-app&gt;</span> <span class="command">npm run dev</span>
+                                                </div>
+                                                <div class="cli-output">[nodemon] starting <span style="color:#60a5fa">node app.js</span></div>
+                                                <div class="cli-line">
+                                                    <span class="prompt">PS D:\vibe-app&gt;</span> <span class="command">git commit -am "add router"</span>
+                                                </div>
+                                                <div class="cli-output">[main 1a2b3c4] add router</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Copilot Chat 側邊欄 -->
+                                    <div style="width: 260px; background: #23272f; border-left: 1px solid #444; padding: 18px 16px; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;">
+                                        <div style="font-size: 1.2rem; color: #60a5fa; font-weight: bold; margin-bottom: 12px;">Copilot Chat</div>
+                                        <div style="width: 100%; margin-bottom: 10px;">
+                                            <div style="color: #e2e8f0; font-size: 13px; margin-bottom: 8px;"><span style="color:#60a5fa">你：</span> 如何加一個 RESTful 路由？</div>
+                                            <div style="color: #a7f3d0; font-size: 13px; background: #1e293b; border-radius: 6px; padding: 8px; margin-bottom: 8px;"><span style="color:#10b981">Copilot：</span>你可以這樣寫：<br><span style="color:#60a5fa">app.get('/api/data', (req, res) =&gt; &#123; res.json(&#123; msg: 'Hello' &#125;); &#125;);</span></div>
+                                            <div style="color: #e2e8f0; font-size: 13px; margin-bottom: 8px;"><span style="color:#60a5fa">你：</span> 可以幫我加註解嗎？</div>
+                                            <div style="color: #a7f3d0; font-size: 13px; background: #1e293b; border-radius: 6px; padding: 8px; margin-bottom: 8px;"><span style="color:#10b981">Copilot：</span>已加註解：<br><span style="color:#6a9955">// 建立一個 API 路由</span><br><span style="color:#60a5fa">app.get('/api/data', (req, res) =&gt; &#123; res.json(&#123; msg: 'Hello' &#125;); &#125;);</span></div>
+                                        </div>
+                                        <div style="width: 100%;">
+                                            <input type="text" placeholder="輸入訊息..." style="width: 100%; padding: 8px; border-radius: 6px; border: none; background: #1e293b; color: #e2e8f0; font-size: 13px;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="large-text" style="margin-top: 40px;">
                 <span class="highlight">最佳實踐</span>：混合使用！<br>
                 IDE 寫程式碼 + CLI 執行任務
             </div>
@@ -1056,6 +1454,41 @@
                     highlight.style.animation = `pulse 2s ease-in-out ${index * 0.5}s infinite`;
                 }, 2000);
             });
+
+            // CLI 打字動畫
+            const typingCommands = [
+                'npm install express',
+                'npm start',
+                'git add .',
+                'git commit -m "vibe coding magic ✨"'
+            ];
+            
+            let currentCommandIndex = 0;
+            const typingElement = document.querySelector('.typing-text');
+            
+            function typeCommand() {
+                if (!typingElement) return;
+                
+                const command = typingCommands[currentCommandIndex];
+                let charIndex = 0;
+                typingElement.textContent = '';
+                
+                const typeInterval = setInterval(() => {
+                    if (charIndex < command.length) {
+                        typingElement.textContent += command.charAt(charIndex);
+                        charIndex++;
+                    } else {
+                        clearInterval(typeInterval);
+                        setTimeout(() => {
+                            currentCommandIndex = (currentCommandIndex + 1) % typingCommands.length;
+                            setTimeout(typeCommand, 1000);
+                        }, 2000);
+                    }
+                }, 100);
+            }
+            
+            // 開始打字動畫
+            setTimeout(typeCommand, 3000);
         });
     </script>
 </body>
