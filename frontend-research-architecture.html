@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端研究架構 - 互動式架構圖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #e5e7eb;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 50%, #0f172a 100%);
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .header .date {
+            font-size: 1rem;
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.1);
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 架構圖容器 */
+        .architecture {
+            background: rgba(31, 41, 55, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+
+
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+        }
+
+
+
+        /* 分支容器 */
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .branch {
+            background: rgba(55, 65, 81, 0.9);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 2px solid transparent;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .branch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--branch-color);
+            transition: height 0.3s ease;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            border-color: var(--branch-color);
+        }
+
+        .branch:hover::before {
+            height: 8px;
+        }
+
+        /* 工具分支 */
+        .branch.tools {
+            --branch-color: #10b981;
+        }
+
+        .branch.tools .branch-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        /* 設計分支 */
+        .branch.design {
+            --branch-color: #8b5cf6;
+        }
+
+        .branch.design .branch-icon {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        /* 開發分支 */
+        .branch.development {
+            --branch-color: #f59e0b;
+        }
+
+        .branch.development .branch-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .branch-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .branch-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f9fafb;
+        }
+
+        .category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #d1d5db;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .category-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--branch-color);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        .category-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .item {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .item:hover {
+            background: var(--branch-color);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .item.highlight {
+            background: var(--branch-color);
+            color: white;
+            font-weight: 600;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.85;
+            }
+        }
+
+        /* 連接線 - 簡化動畫 */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(79, 70, 229, 0.2), transparent);
+            height: 1px;
+            animation: flow 8s linear infinite;
+            will-change: transform;
+        }
+
+        @keyframes flow {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%);
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(50%);
+            }
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 1200px) {
+            .branches {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .branch {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+
+
+            .architecture {
+                padding: 20px;
+            }
+
+            .branch {
+                padding: 15px;
+            }
+
+            .branch-title {
+                font-size: 1.3rem;
+            }
+
+            .category-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: absolute;
+            background: #1f2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+            transition: opacity 0.2s ease;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border: 5px solid transparent;
+            border-top-color: #1f2937;
+        }
+
+        /* 統計信息 */
+        .stats {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(55, 65, 81, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #818cf8;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>前端研究架構</h1>
+            <div class="subtitle">Frontend Research Architecture</div>
+            <div class="date">最後更新：2025/07/14</div>
+        </div>
+
+        <div class="architecture">
+
+
+            <!-- 主要分支 -->
+            <div class="branches">
+                <!-- 工具分支 -->
+                <div class="branch tools">
+                    <div class="branch-header">
+                        <div class="branch-icon">🛠️</div>
+                        <div class="branch-title">工具</div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">新技術研究</div>
+                        <div class="category-items">
+                            <div class="item highlight" data-tooltip="直覺驅動的 AI 協作開發">Vibe Coding V.S. LLM coding</div>
+                            <div class="item">架構評估</div>
+                            <div class="item">技術概念</div>
+                            <div class="item">可能應用方式</div>
+                        </div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">AI 工具</div>
+                        <div class="category-items">
+                            <div class="item highlight" data-tooltip="AI 驅動的命令列開發工具">Claude Code</div>
+                            <div class="item">Cursor</div>
+                            <div class="item">GitHub Copilot</div>
+                            <div class="item">v0.dev</div>
+                        </div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">效率提升</div>
+                        <div class="category-items">
+                            <div class="item">使用方式</div>
+                            <div class="item">實際應用案例</div>
+                            <div class="item">常見效益</div>
+                            <div class="item">最佳實踐</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 設計分支 -->
+                <div class="branch design">
+                    <div class="branch-header">
+                        <div class="branch-icon">🎨</div>
+                        <div class="branch-title">設計</div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">UI 設計</div>
+                        <div class="category-items">
+                            <div class="item">網站分享</div>
+                            <div class="item">設計規範</div>
+                            <div class="item">當前主流設計趨勢</div>
+                            <div class="item">Component Library</div>
+                        </div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">UX 體驗</div>
+                        <div class="category-items">
+                            <div class="item">網站分享</div>
+                            <div class="item">設計規範</div>
+                            <div class="item">使用者研究</div>
+                            <div class="item">互動設計</div>
+                        </div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">設計系統</div>
+                        <div class="category-items">
+                            <div class="item">Design Token</div>
+                            <div class="item">組件庫</div>
+                            <div class="item">設計規範</div>
+                            <div class="item">品牌識別</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 開發分支 -->
+                <div class="branch development">
+                    <div class="branch-header">
+                        <div class="branch-icon">💻</div>
+                        <div class="branch-title">開發</div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">無障礙</div>
+                        <div class="category-items">
+                            <div class="item">適用問題</div>
+                            <div class="item">解決方法</div>
+                            <div class="item">Code Review</div>
+                            <div class="item">WCAG 標準</div>
+                        </div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">效能優化</div>
+                        <div class="category-items">
+                            <div class="item">適用問題</div>
+                            <div class="item">解決方法</div>
+                            <div class="item">Code Review</div>
+                            <div class="item">效能監控</div>
+                        </div>
+                    </div>
+
+                    <div class="category">
+                        <div class="category-title">需求功能</div>
+                        <div class="category-items">
+                            <div class="item">需求分析</div>
+                            <div class="item">Code Review</div>
+                            <div class="item">可維護性考量</div>
+                            <div class="item">測試策略</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 統計信息 -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">主要研究領域</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">研究分類</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">40+</div>
+                    <div class="stat-label">具體研究項目</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">核心新技術</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 連接線動畫 -->
+        <!-- <div class="connections">
+            <div class="connection-line" style="top: 300px; left: 20%; width: 60%;"></div>
+            <div class="connection-line" style="top: 500px; left: 10%; width: 80%; animation-delay: 1s;"></div>
+            <div class="connection-line" style="top: 700px; left: 30%; width: 40%; animation-delay: 2s;"></div>
+        </div> -->
+    </div>
+
+    <!-- 工具提示 -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // 工具提示功能
+        const tooltip = document.getElementById('tooltip');
+        const items = document.querySelectorAll('[data-tooltip]');
+
+        items.forEach(item => {
+            item.addEventListener('mouseenter', (e) => {
+                const text = e.target.getAttribute('data-tooltip');
+                tooltip.textContent = text;
+                tooltip.style.opacity = '1';
+            });
+
+            item.addEventListener('mouseleave', () => {
+                tooltip.style.opacity = '0';
+            });
+
+            item.addEventListener('mousemove', (e) => {
+                tooltip.style.left = e.pageX + 10 + 'px';
+                tooltip.style.top = e.pageY - 40 + 'px';
+            });
+        });
+
+        // 分支點擊互動
+        const branches = document.querySelectorAll('.branch');
+        branches.forEach(branch => {
+            branch.addEventListener('click', () => {
+                // 移除其他分支的活動狀態
+                branches.forEach(b => b.classList.remove('active'));
+                // 添加當前分支的活動狀態
+                branch.classList.add('active');
+            });
+        });
+
+        // 項目點擊詳細信息
+        const categoryItems = document.querySelectorAll('.item');
+        categoryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const itemName = item.textContent;
+                // 這裡可以添加顯示詳細信息的邏輯
+                console.log(`點擊了項目: ${itemName}`);
+
+                // 添加點擊效果
+                item.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    item.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        item.style.transform = 'scale(1)';
+                    }, 150);
+                }, 100);
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>
