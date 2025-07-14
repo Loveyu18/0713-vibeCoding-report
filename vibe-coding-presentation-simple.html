@@ -907,6 +907,20 @@
                 width: 150px;
             }
 
+            /* Prompt 頁面響應式 */
+            #slide-4 > div:first-of-type {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+
+            #slide-4 h3 {
+                font-size: 1.8rem !important;
+            }
+
+            #slide-4 div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+
             h1 {
                 font-size: 3rem;
             }
@@ -944,6 +958,8 @@
             <div class="nav-dot" onclick="scrollToSlide(3)"></div>
             <div class="nav-dot" onclick="scrollToSlide(4)"></div>
             <div class="nav-dot" onclick="scrollToSlide(5)"></div>
+            <div class="nav-dot" onclick="scrollToSlide(6)"></div>
+            <div class="nav-dot" onclick="scrollToSlide(7)"></div>
         </div>
     </div>
 
@@ -1205,8 +1221,170 @@
             </div>
         </div>
 
-        <!-- Slide 5: 推薦工具 -->
+        <!-- Slide 5: Prompt 和 System Prompt 差別 -->
         <div class="slide" id="slide-4">
+            <h2>掌握 AI 溝通技巧：Prompt 設計</h2>
+
+            <!-- 概念圖解 -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 40px 0;">
+                <!-- System Prompt 說明 -->
+                <div style="background: rgba(139, 92, 246, 0.1); border: 2px solid rgba(139, 92, 246, 0.3); border-radius: 15px; padding: 30px;">
+                    <h3 style="color: #a78bfa; margin-bottom: 20px;">🎭 System Prompt</h3>
+                    <p style="font-size: 1.4rem; margin-bottom: 15px;"><span class="highlight">角色設定</span> · <span class="highlight">背景知識</span></p>
+                    
+                    <div style="background: #1a1a1a; border-radius: 10px; padding: 20px; margin: 20px 0; font-family: monospace;">
+                        <div style="color: #a78bfa; font-size: 1.1rem; margin-bottom: 10px;">System:</div>
+                        <div style="color: #e5e5e5; font-size: 1.2rem; line-height: 1.4;">
+                            你是一位資深的 React 開發專家<br>
+                            專精於現代前端架構設計<br>
+                            回答要簡潔且提供最佳實踐
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 1.3rem; color: #e2e8f0;">
+                        <p>✨ <strong>特點</strong>：持續有效、隱形影響</p>
+                        <p>🎯 <strong>用途</strong>：定義 AI 行為風格</p>
+                    </div>
+                </div>
+
+                <!-- User Prompt 說明 -->
+                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 15px; padding: 30px;">
+                    <h3 style="color: #22c55e; margin-bottom: 20px;">💬 User Prompt</h3>
+                    <p style="font-size: 1.4rem; margin-bottom: 15px;"><span class="highlight">具體問題</span> · <span class="highlight">明確指令</span></p>
+                    
+                    <div style="background: #1a1a1a; border-radius: 10px; padding: 20px; margin: 20px 0; font-family: monospace;">
+                        <div style="color: #22c55e; font-size: 1.1rem; margin-bottom: 10px;">User:</div>
+                        <div style="color: #e5e5e5; font-size: 1.2rem; line-height: 1.4;">
+                            幫我設計一個購物車組件<br>
+                            需要增加、刪除商品功能<br>
+                            使用 TypeScript
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 1.3rem; color: #e2e8f0;">
+                        <p>🎯 <strong>特點</strong>：即時對話、具體需求</p>
+                        <p>💡 <strong>用途</strong>：描述具體任務</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 實際應用對比 -->
+            <div style="margin-top: 50px;">
+                <h3 style="text-align: center; margin-bottom: 30px; color: #60a5fa;">📊 實際應用效果對比</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <!-- 沒有 System Prompt -->
+                    <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 25px;">
+                        <h4 style="color: #ef4444; margin-bottom: 15px;">❌ 只有 User Prompt</h4>
+                        <div style="background: #1a1a1a; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 1.1rem;">
+                            <div style="color: #ef4444;">Q:</div>
+                            <div style="color: #e5e5e5; margin: 8px 0;">寫一個計算機</div>
+                            <div style="color: #ef4444;">A:</div>
+                            <div style="color: #fbbf24; font-size: 1rem;">
+                                這是一個基本的計算機...<br>
+                                (回答可能過於簡單或不符合需求)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 有 System Prompt -->
+                    <div style="background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 25px;">
+                        <h4 style="color: #22c55e; margin-bottom: 15px;">✅ System + User Prompt</h4>
+                        <div style="background: #1a1a1a; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 1.1rem;">
+                            <div style="color: #a78bfa; font-size: 0.9rem;">System: 你是 React 專家...</div>
+                            <div style="color: #22c55e; margin-top: 8px;">Q:</div>
+                            <div style="color: #e5e5e5; margin: 8px 0;">寫一個計算機</div>
+                            <div style="color: #22c55e;">A:</div>
+                            <div style="color: #a7f3d0; font-size: 1rem;">
+                                使用 React Hook + TypeScript<br>
+                                遵循最佳實踐，包含測試...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 模式說明 -->
+            <div style="margin-top: 50px; background: rgba(168, 85, 247, 0.1); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 15px; padding: 30px;">
+                <h3 style="color: #a855f7; margin-bottom: 20px;">🤖 深度解析：Agent 模式 = 超級 System Prompt</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px; margin: 25px 0;">
+                    <!-- 基礎 System Prompt -->
+                    <div style="background: rgba(59, 130, 246, 0.1); border-radius: 10px; padding: 20px; text-align: center;">
+                        <h4 style="color: #3b82f6; margin-bottom: 15px;">📝 傳統 System Prompt</h4>
+                        <div style="font-size: 1.2rem; color: #e2e8f0;">
+                            <p>✨ 角色定義</p>
+                            <p>🎯 行為規則</p>
+                            <p>📋 回答格式</p>
+                        </div>
+                    </div>
+
+                    <!-- 進化箭頭 -->
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <div style="font-size: 3rem; color: #a855f7;">➡️</div>
+                    </div>
+
+                    <!-- Agent 模式 -->
+                    <div style="background: rgba(168, 85, 247, 0.1); border-radius: 10px; padding: 20px; text-align: center;">
+                        <h4 style="color: #a855f7; margin-bottom: 15px;">🚀 Agent 模式</h4>
+                        <div style="font-size: 1.2rem; color: #e2e8f0;">
+                            <p>🧠 <strong>記憶能力</strong></p>
+                            <p>🔧 <strong>工具使用</strong></p>
+                            <p>🎯 <strong>目標導向</strong></p>
+                            <p>🔄 <strong>自主決策</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 實際差異對比 -->
+                <div style="background: #1a1a1a; border-radius: 12px; padding: 25px; margin: 25px 0;">
+                    <h4 style="color: #fbbf24; margin-bottom: 20px;">🔍 實際差異展示</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                        <!-- System Prompt -->
+                        <div>
+                            <div style="color: #3b82f6; font-weight: bold; margin-bottom: 10px;">📝 System Prompt 模式：</div>
+                            <div style="color: #e5e5e5; font-family: monospace; background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; font-size: 1rem;">
+                                System: 你是專業前端工程師<br>
+                                User: 寫一個按鈕組件<br>
+                                AI: [生成代碼]<br>
+                                <span style="color: #ef4444;">❌ 結束 - 無法持續改進</span>
+                            </div>
+                        </div>
+
+                        <!-- Agent 模式 -->
+                        <div>
+                            <div style="color: #a855f7; font-weight: bold; margin-bottom: 10px;">🤖 Agent 模式：</div>
+                            <div style="color: #e5e5e5; font-family: monospace; background: rgba(168, 85, 247, 0.1); padding: 15px; border-radius: 8px; font-size: 1rem;">
+                                Agent: 分析需求 → 生成代碼<br>
+                                → 測試運行 → 發現問題<br>
+                                → 自動修正 → 優化性能<br>
+                                <span style="color: #22c55e;">✅ 持續迭代到滿意為止</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 實用技巧 -->
+            <div class="large-text" style="margin-top: 40px; background: rgba(59, 130, 246, 0.1); padding: 25px; border-radius: 15px;">
+                <h4 style="color: #60a5fa; margin-bottom: 15px;">💡 Vibe Coding 層次理解</h4>
+                <div style="font-size: 1.4rem; line-height: 1.5;">
+                    <div style="margin-bottom: 15px;">
+                        <span class="highlight">Level 1</span>: 學會寫好 System Prompt
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <span class="highlight">Level 2</span>: 善用 Agent 模式工具（Cursor Composer、Claude Code）
+                    </div>
+                    <div>
+                        <span class="highlight">Level 3</span>: 設計多 Agent 協作流程
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: 推薦工具 -->
+        <div class="slide" id="slide-5">
             <h2>Vibe Coding 工具推薦</h2>
 
             <div class="tool-grid">
@@ -1219,7 +1397,7 @@
                     <div class="price-info">
                         <div class="free-tier">
                             <p class="tier-title">🆓 免費版</p>
-                            <p class="usage">2000 次 agent 指令/月</p>
+                            <p class="usage">200 次 Claude Sonnet 補完/月</p>
                             <p class="feature">基本 AI 補完 + Chat</p>
                         </div>
                         <div class="paid-tier">
@@ -1276,8 +1454,62 @@
             </div>
         </div>
 
-        <!-- Slide 6: 總結和行動 -->
-        <div class="slide" id="slide-5">
+        <!-- Slide 7: Vibe Coding 優點與風險 -->
+        <div class="slide" id="slide-6">
+            <h2>Vibe Coding：優點與潛在風險</h2>
+
+            <div class="grid" style="margin-top: 40px;">
+                <!-- 優點部分 -->
+                <div class="card" style="border: 2px solid rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.05);">
+                    <span class="icon" style="color: #22c55e;">✅</span>
+                    <h4 style="color: #22c55e;">核心優點</h4>
+                    <div class="workflow-section">
+                        <ul class="feature-list">
+                            <li><span class="highlight">開發速度提升 3-5 倍</span></li>
+                            <li>降低學習新技術門檻</li>
+                            <li>提升程式碼品質與一致性</li>
+                            <li>減少重複性工作</li>
+                            <li>激發創意與實驗精神</li>
+                            <li>即時問答與除錯協助</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 風險部分 -->
+                <div class="card" style="border: 2px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
+                    <span class="icon" style="color: #ef4444;">⚠️</span>
+                    <h4 style="color: #ef4444;">需要注意的風險</h4>
+                    <div class="workflow-section">
+                        <ul class="feature-list">
+                            <li><span style="color: #fbbf24;">過度依賴</span> AI 建議</li>
+                            <li>忽略<span style="color: #fbbf24;">基礎原理學習</span></li>
+                            <li>程式碼<span style="color: #fbbf24;">安全性檢視</span>不足</li>
+                            <li>AI 生成內容的<span style="color: #fbbf24;">版權問題</span></li>
+                            <li>工具成本與<span style="color: #fbbf24;">使用限制</span></li>
+                            <li>團隊協作<span style="color: #fbbf24;">標準不一致</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最佳實踐建議 -->
+            <div class="large-text" style="margin-top: 50px; background: rgba(59, 130, 246, 0.1); padding: 30px; border-radius: 15px; border-left: 5px solid #3b82f6;">
+                <h3 style="color: #60a5fa; margin-bottom: 20px;">🎯 最佳實踐原則</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 1.6rem;">
+                    <div>
+                        <p><span class="highlight">學習與應用並重</span></p>
+                        <p style="font-size: 1.3rem; margin-top: 10px;">理解 AI 建議背後的原理</p>
+                    </div>
+                    <div>
+                        <p><span class="highlight">審慎檢視 AI 輸出</span></p>
+                        <p style="font-size: 1.3rem; margin-top: 10px;">確保程式碼安全性與正確性</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: 總結和行動 -->
+        <div class="slide" id="slide-7">
             <h2>開始你的 Vibe Coding 之旅</h2>
 
             <div class="large-text">
@@ -1313,7 +1545,7 @@
 
     <script>
         let currentSlideIndex = 0;
-        const totalSlides = 6;
+        const totalSlides = 8;
 
         // 初始化動畫
         function initializeAnimations() {
