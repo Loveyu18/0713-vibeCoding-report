@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coding - 直覺驅動的 AI 協作開發</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+            line-height: 1.4;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .slide {
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 30px 0;
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide.prev {
+            transform: translateX(-100px);
+            opacity: 0;
+        }
+
+        .slide.next {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+
+        h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: slideInFromTop 1s ease-out 0.3s forwards;
+        }
+
+        @keyframes slideInFromTop {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        h2 {
+            font-size: 4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #ffffff;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        h3 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #60a5fa;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 2.5rem;
+            text-align: center;
+            color: #e2e8f0;
+            margin-bottom: 60px;
+            font-weight: 400;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideInFromBottom 1s ease-out 0.6s forwards;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .grid.three-columns {
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 1300px;
+            margin: 40px auto;
+        }
+
+        @media (max-width: 1200px) {
+            .grid.three-columns {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid.three-columns {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        .card {
+            background: rgba(51, 65, 85, 0.9);
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card.animate {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .card:hover {
+            transform: translateY(-15px) scale(1.05);
+            border-color: rgba(96, 165, 250, 0.8);
+            box-shadow: 0 25px 60px rgba(59, 130, 246, 0.3);
+        }
+
+        .card h4 {
+            font-size: 2.2rem;
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .card p {
+            font-size: 1.8rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            display: block;
+            opacity: 0;
+            transform: scale(0);
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .card:nth-child(1) .icon {
+            animation-delay: 0.8s;
+        }
+
+        .card:nth-child(2) .icon {
+            animation-delay: 1.0s;
+        }
+
+        .card:nth-child(3) .icon {
+            animation-delay: 1.2s;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .vs-section {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: center;
+            margin: 60px 0;
+        }
+
+        .vs-divider {
+            font-size: 4rem;
+            color: #ef4444;
+            font-weight: bold;
+            text-align: center;
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0) rotate(180deg);
+            animation: rotateIn 1s ease-out 1.5s forwards;
+        }
+
+        @keyframes rotateIn {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(180deg);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2) rotate(0deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .comparison-card {
+            background: rgba(51, 65, 85, 0.9);
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .comparison-card.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .comparison-card.vibe {
+            transform: translateX(50px);
+        }
+
+        .comparison-card.vibe.animate {
+            transform: translateX(0);
+        }
+
+        .comparison-card.traditional {
+            border: 3px solid #ef4444;
+        }
+
+        .comparison-card.vibe {
+            border: 3px solid #10b981;
+        }
+
+        .comparison-card h4 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .traditional h4 {
+            color: #ef4444;
+        }
+
+        .vibe h4 {
+            color: #10b981;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            font-size: 1.8rem;
+            padding: 15px 0;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .feature-list li:before {
+            content: "▶";
+            color: #60a5fa;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: 15px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin: 40px 0;
+            max-width: 1200px;
+        }
+
+        @media (max-width: 1024px) {
+            .tool-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px;
+            }
+        }
+
+        .tool-card {
+            background: rgba(51, 65, 85, 0.9);
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tool-card.animate {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: rgba(139, 92, 246, 0.8);
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+        }
+
+        .tool-card h4 {
+            font-size: 2rem;
+            color: #a78bfa;
+            margin-bottom: 20px;
+        }
+
+        .tool-card p {
+            font-size: 1.6rem;
+            color: #e2e8f0;
+            margin-bottom: 15px;
+        }
+
+        .price-info {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .free-tier,
+        .paid-tier {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .free-tier {
+            border-left: 3px solid #fbbf24;
+        }
+
+        .paid-tier {
+            border-left: 3px solid #10b981;
+        }
+
+        .tier-title {
+            font-size: 1.4rem !important;
+            font-weight: bold !important;
+            margin-bottom: 8px !important;
+            color: #ffffff !important;
+        }
+
+        .price {
+            font-size: 1.8rem !important;
+            color: #10b981 !important;
+            font-weight: bold !important;
+            margin-bottom: 6px !important;
+        }
+
+        .usage {
+            font-size: 1.3rem !important;
+            color: #60a5fa !important;
+            margin-bottom: 6px !important;
+        }
+
+        .feature {
+            font-size: 1.2rem !important;
+            color: #e2e8f0 !important;
+            font-weight: 400 !important;
+            margin-bottom: 0 !important;
+        }
+
+        .tools-section,
+        .workflow-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid rgba(96, 165, 250, 0.6);
+        }
+
+        .section-title {
+            font-size: 1.4rem !important;
+            font-weight: 600 !important;
+            color: #60a5fa !important;
+            margin-bottom: 10px !important;
+        }
+
+        .tools-section p:not(.section-title) {
+            font-size: 1.3rem !important;
+            color: #e2e8f0 !important;
+            margin: 5px 0 !important;
+            font-weight: 500;
+        }
+
+        .workflow-section .feature-list {
+            margin-top: 10px;
+        }
+
+        .workflow-section .feature-list li {
+            font-size: 1.4rem !important;
+            padding: 8px 0 !important;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #60a5fa, #a78bfa);
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: #ffffff;
+            font-weight: bold;
+            display: inline-block;
+            margin: 0 4px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .highlight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .highlight:hover::before {
+            left: 100%;
+        }
+
+        .highlight:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(96, 165, 250, 0.4);
+        }
+
+        .large-text {
+            font-size: 2.2rem;
+            line-height: 1.4;
+            color: #ffffff;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .emoji {
+            font-size: 3rem;
+            margin: 0 10px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .emoji:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .emoji:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        /* Navigation */
+        .nav-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.95);
+            padding: 15px 30px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 9999;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-dot::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(96, 165, 250, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+        }
+
+        .nav-dot.active {
+            background: #60a5fa;
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.6);
+            transform: scale(1.2);
+        }
+
+        .nav-dot.active::before {
+            width: 200%;
+            height: 200%;
+        }
+
+        .nav-dot:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 3rem;
+            }
+
+            h2 {
+                font-size: 2.5rem;
+            }
+
+            h3 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.8rem;
+            }
+
+            .card p,
+            .feature-list li {
+                font-size: 1.4rem;
+            }
+
+            .large-text {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-indicator">
+        <div class="nav-dots">
+            <div class="nav-dot active" onclick="scrollToSlide(0)"></div>
+            <div class="nav-dot" onclick="scrollToSlide(1)"></div>
+            <div class="nav-dot" onclick="scrollToSlide(2)"></div>
+            <div class="nav-dot" onclick="scrollToSlide(3)"></div>
+            <div class="nav-dot" onclick="scrollToSlide(4)"></div>
+            <div class="nav-dot" onclick="scrollToSlide(5)"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Slide 1: 標題頁 -->
+        <div class="slide" id="slide-0">
+            <h1><span class="emoji">🎵</span>Vibe Coding</h1>
+            <div class="subtitle">直覺驅動的 AI 協作開發革命</div>
+
+            <div class="grid three-columns">
+                <div class="card">
+                    <span class="icon">🧠</span>
+                    <h4>直覺優先</h4>
+                    <p>相信開發者的第一感覺<br>讓技術服務於創意</p>
+                </div>
+                <div class="card">
+                    <span class="icon">⚡</span>
+                    <h4>心流狀態</h4>
+                    <p>保持專注和創造力<br>減少認知中斷</p>
+                </div>
+                <div class="card">
+                    <span class="icon">🚀</span>
+                    <h4>創意放大</h4>
+                    <p>AI 作為創意夥伴<br>探索無限可能</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: 什麼是 Vibe Coding -->
+        <div class="slide" id="slide-1">
+            <h2>什麼是 Vibe Coding？</h2>
+
+            <div class="large-text">
+                <p><span class="highlight">感覺對了就是對了</span></p>
+                <p style="margin: 40px 0;">當你寫程式碼時，AI 懂你的想法</p>
+                <p><span class="highlight">無縫協作</span> → <span class="highlight">創意放大</span> → <span
+                        class="highlight">效率爆發</span></p>
+            </div>
+
+            <div class="grid" style="margin-top: 60px;">
+                <div class="card">
+                    <h4>傳統開發</h4>
+                    <p>學習工具 → 適應工具 → 被工具限制</p>
+                </div>
+                <div class="card">
+                    <h4>Vibe Coding</h4>
+                    <p>選擇工具 → 建立風格 → 創意無限</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Vibe Coding vs LLM Coding -->
+        <div class="slide" id="slide-2">
+            <h2>Vibe Coding vs 傳統 LLM Coding</h2>
+
+            <div class="vs-section">
+                <div class="comparison-card traditional">
+                    <h4><span class="emoji">🔄</span>傳統 LLM Coding</h4>
+                    <ul class="feature-list">
+                        <li>開啟 ChatGPT 網頁</li>
+                        <li>描述需求，獲得程式碼</li>
+                        <li>複製到 IDE</li>
+                        <li>測試和修改</li>
+                        <li>反覆切換視窗</li>
+                    </ul>
+                    <div style="margin-top: 30px; font-size: 1.8rem; color: #ef4444;">
+                        ⏱️ 平均 5-10 分鐘/問題
+                    </div>
+                </div>
+
+                <div class="vs-divider">VS</div>
+
+                <div class="comparison-card vibe">
+                    <h4><span class="emoji">✨</span>Vibe Coding</h4>
+                    <ul class="feature-list">
+                        <li>在 IDE 中直接思考</li>
+                        <li>AI 即時建議</li>
+                        <li>Tab 接受或繼續</li>
+                        <li>自然對話式互動</li>
+                        <li>保持心流狀態</li>
+                    </ul>
+                    <div style="margin-top: 30px; font-size: 1.8rem; color: #10b981;">
+                        ⏱️ 平均 30秒-2分鐘/問題
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: CLI vs IDE -->
+        <div class="slide" id="slide-3">
+            <h2>CLI vs IDE：選擇你的武器</h2>
+
+            <div class="grid">
+                <div class="card">
+                    <span class="icon">💻</span>
+                    <h4>CLI (命令列)</h4>
+                    <div class="tools-section">
+                        <p class="section-title">🛠️ 常用工具：</p>
+                        <p>Terminal(終端機), PowerShell</p>
+                    </div>
+                    <div class="workflow-section">
+                        <p class="section-title">💡 開發方式：</p>
+                        <ul class="feature-list">
+                            <li>純鍵盤操作</li>
+                            <li>指令驅動開發</li>
+                            <li>腳本自動化</li>
+                            <li>遠端伺服器操作</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <span class="icon">🎨</span>
+                    <h4>IDE (整合開發環境)</h4>
+                    <div class="tools-section">
+                        <p class="section-title">🛠️ 常用工具：</p>
+                        <p>VS Code, Cursor</p>
+                    </div>
+                    <div class="workflow-section">
+                        <p class="section-title">💡 開發方式：</p>
+                        <ul class="feature-list">
+                            <li>視覺化介面</li>
+                            <li>拖拉式操作</li>
+                            <li>即時預覽</li>
+                            <li>AI 輔助編碼</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="large-text" style="margin-top: 60px;">
+                <span class="highlight">最佳實踐</span>：混合使用！<br>
+                IDE 寫程式碼 + CLI 執行任務
+            </div>
+        </div>
+
+        <!-- Slide 5: 推薦工具 -->
+        <div class="slide" id="slide-4">
+            <h2>Vibe Coding 工具推薦</h2>
+
+            <div class="tool-grid">
+                <div class="tool-card" data-delay="0">
+                    <span class="icon">🎯</span>
+                    <h4>Cursor</h4>
+                    <p><strong>AI 原生 IDE</strong></p>
+                    <p>基於 VS Code</p>
+                    <p>深度 AI 整合</p>
+                    <div class="price-info">
+                        <div class="free-tier">
+                            <p class="tier-title">🆓 免費版</p>
+                            <p class="usage">2000 次 agent 指令/月</p>
+                            <p class="feature">基本 AI 補完 + Chat</p>
+                        </div>
+                        <div class="paid-tier">
+                            <p class="tier-title">💳 Pro 版</p>
+                            <p class="price">NT$ 640/月</p>
+                            <p class="usage">無限 agent 指令</p>
+                            <p class="feature">Composer 多檔案編輯</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-card" data-delay="200">
+                    <span class="icon">🤖</span>
+                    <h4>GitHub Copilot</h4>
+                    <p><strong>程式碼助手</strong></p>
+                    <p>即時程式碼建議</p>
+                    <p>支援多種 IDE</p>
+                    <div class="price-info">
+                        <div class="free-tier">
+                            <p class="tier-title">🆓 免費版</p>
+                            <p class="usage">有限 agent 指令</p>
+                            <p class="feature">基本程式碼補完</p>
+                        </div>
+                        <div class="paid-tier">
+                            <p class="tier-title">💳 Pro 版</p>
+                            <p class="price">NT$ 320/月</p>
+                            <p class="usage">無限 agent 指令</p>
+                            <p class="feature">Copilot Chat + 解釋 + 優先速度</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-card" data-delay="400">
+                    <span class="icon">🎨</span>
+                    <h4>v0.dev</h4>
+                    <p><strong>UI 快速原型</strong></p>
+                    <p>文字生成組件</p>
+                    <p>即時預覽</p>
+                    <div class="price-info">
+                        <div class="free-tier">
+                            <p class="tier-title">🆓 免費版</p>
+                            <p class="usage">10 次 agent 指令/月</p>
+                            <p class="feature">基本 UI 生成</p>
+                        </div>
+                        <div class="paid-tier">
+                            <p class="tier-title">💳 Pro 版</p>
+                            <p class="price">NT$ 640/月</p>
+                            <p class="usage">200 次 agent 指令/月</p>
+                            <p class="feature">進階編輯 + 導出</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Slide 6: 總結和行動 -->
+        <div class="slide" id="slide-5">
+            <h2>開始你的 Vibe Coding 之旅</h2>
+
+            <div class="large-text">
+                <p><span class="emoji">💡</span> <span class="highlight">核心理念</span></p>
+                <p style="margin: 40px 0; font-size: 3rem;">
+                    "感覺對了就是對了"
+                </p>
+            </div>
+
+            <div class="grid" style="margin-top: 60px;">
+                <div class="card">
+                    <span class="icon">📋</span>
+                    <h4>立即行動</h4>
+                    <p><strong>今天</strong>：下載 Cursor</p>
+                    <p><strong>本週</strong>：完成小專案</p>
+                    <p><strong>本月</strong>：建立工作流程</p>
+                </div>
+                <div class="card">
+                    <span class="icon">🎯</span>
+                    <h4>成功指標</h4>
+                    <p>與 AI 自然協作</p>
+                    <p>找到最佳工具組合</p>
+                    <p>效率明顯提升</p>
+                </div>
+            </div>
+
+            <div class="large-text" style="margin-top: 60px; color: #60a5fa;">
+                <p>不要被工具綁架</p>
+                <p>讓工具服務於你的創意！</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const totalSlides = 6;
+
+        // 初始化動畫
+        function initializeAnimations() {
+            // 初始化第一張投影片
+            const firstSlide = document.getElementById('slide-0');
+            firstSlide.classList.add('active');
+
+            // 延遲觸發卡片動畫
+            setTimeout(() => {
+                const cards = firstSlide.querySelectorAll('.card');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('animate');
+                    }, index * 200);
+                });
+            }, 800);
+        }
+
+        // 觸發投影片動畫
+        function animateSlide(slideIndex) {
+            const slide = document.getElementById(`slide-${slideIndex}`);
+            const cards = slide.querySelectorAll('.card');
+            const toolCards = slide.querySelectorAll('.tool-card');
+            const comparisonCards = slide.querySelectorAll('.comparison-card');
+
+            // 重置所有投影片
+            document.querySelectorAll('.slide').forEach(s => {
+                s.classList.remove('active', 'prev', 'next');
+            });
+
+            // 設置當前投影片
+            slide.classList.add('active');
+
+            // 動畫一般卡片
+            if (cards.length > 0) {
+                setTimeout(() => {
+                    cards.forEach((card, index) => {
+                        setTimeout(() => {
+                            card.classList.add('animate');
+                        }, index * 150);
+                    });
+                }, 300);
+            }
+
+            // 動畫工具卡片
+            if (toolCards.length > 0) {
+                setTimeout(() => {
+                    toolCards.forEach((card, index) => {
+                        const delay = card.getAttribute('data-delay') || (index * 200);
+                        setTimeout(() => {
+                            card.classList.add('animate');
+                        }, parseInt(delay));
+                    });
+                }, 300);
+            }
+
+            // 動畫比較卡片
+            if (comparisonCards.length > 0) {
+                setTimeout(() => {
+                    comparisonCards.forEach((card, index) => {
+                        setTimeout(() => {
+                            card.classList.add('animate');
+                        }, index * 400);
+                    });
+                }, 500);
+            }
+        }
+
+        // 導航功能
+        function scrollToSlide(index) {
+            if (index === currentSlideIndex) return;
+
+            const slide = document.getElementById(`slide-${index}`);
+
+            // 重置動畫
+            document.querySelectorAll('.card, .tool-card').forEach(card => {
+                card.classList.remove('animate');
+            });
+
+            // 滾動到目標
+            slide.scrollIntoView({ behavior: 'smooth' });
+
+            // 更新索引
+            currentSlideIndex = index;
+
+            // 觸發動畫
+            setTimeout(() => {
+                animateSlide(index);
+            }, 100);
+
+            // 更新導航點
+            document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        // 鍵盤導航
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                const nextIndex = Math.min(currentSlideIndex + 1, totalSlides - 1);
+                scrollToSlide(nextIndex);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prevIndex = Math.max(currentSlideIndex - 1, 0);
+                scrollToSlide(prevIndex);
+            }
+        });
+
+        // 滾動檢測
+        window.addEventListener('scroll', function () {
+            const slides = document.querySelectorAll('.slide');
+            const scrollTop = window.pageYOffset + window.innerHeight / 2;
+
+            slides.forEach((slide, index) => {
+                const slideTop = slide.offsetTop;
+                const slideBottom = slideTop + slide.offsetHeight;
+
+                if (scrollTop >= slideTop && scrollTop <= slideBottom && index !== currentSlideIndex) {
+                    currentSlideIndex = index;
+                    animateSlide(index);
+
+                    document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                        dot.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        });
+
+        // 頁面加載完成後初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeAnimations();
+
+            // 為所有 highlight 元素添加閃光效果
+            const highlights = document.querySelectorAll('.highlight');
+            highlights.forEach((highlight, index) => {
+                setTimeout(() => {
+                    highlight.style.animation = `pulse 2s ease-in-out ${index * 0.5}s infinite`;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+
+</html>
