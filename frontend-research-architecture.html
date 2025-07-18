@@ -226,6 +226,26 @@
             animation: pulse 3s infinite;
         }
 
+        .item.clickable {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item.clickable::after {
+            content: '🔗';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .item.clickable:hover::after {
+            opacity: 1;
+        }
+
         @keyframes pulse {
 
             0%,
@@ -284,29 +304,210 @@
             .branch {
                 padding: 20px;
             }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+                margin-bottom: 15px;
+            }
+
+            .header .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .header .date {
+                font-size: 0.9rem;
+                padding: 6px 12px;
+            }
+
+            .architecture {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .branch {
+                padding: 20px 15px;
+                border-radius: 12px;
+            }
+
+            .branch-header {
+                margin-bottom: 20px;
+            }
+
+            .branch-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+                margin-right: 12px;
+            }
+
+            .branch-title {
+                font-size: 1.4rem;
+            }
+
+            .category {
+                margin-bottom: 20px;
+            }
+
+            .category-title {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+
+            .category-items {
+                gap: 6px;
+            }
+
+            .item {
+                padding: 10px 14px;
+                font-size: 0.95rem;
+                border-radius: 6px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .item.clickable::after {
+                font-size: 0.9rem;
+                right: 10px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                margin-top: 30px;
+            }
+
+            .stat-card {
+                padding: 15px;
+                border-radius: 10px;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.85rem;
+            }
+
+            /* 工具提示在手機上調整 */
+            .tooltip {
+                font-size: 0.75rem;
+                padding: 6px 10px;
+                max-width: 200px;
+                white-space: normal;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header .subtitle {
+                font-size: 1rem;
+            }
+
+            .architecture {
+                padding: 15px 10px;
+            }
+
+            .branch {
+                padding: 15px 10px;
+            }
+
+            .branch-title {
+                font-size: 1.2rem;
+            }
+
+            .category-title {
+                font-size: 1rem;
+            }
+
+            .item {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+                min-height: 40px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-number {
+                font-size: 1.6rem;
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* 觸控優化 */
+        @media (hover: none) {
+            .item:hover {
+                background: var(--branch-color);
+                color: white;
+                transform: none;
+            }
+
+            .branch:hover {
+                transform: none;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+
+            .branch:hover::before {
+                height: 4px;
+            }
+        }
+
+        /* 橫向手機優化 */
+        @media (max-width: 896px) and (orientation: landscape) {
+            .header {
+                margin-bottom: 30px;
+            }
+
             .header h1 {
                 font-size: 2rem;
             }
 
-
-
-            .architecture {
-                padding: 20px;
+            .branches {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
             }
 
             .branch {
                 padding: 15px;
             }
 
-            .branch-title {
-                font-size: 1.3rem;
+            .stats {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
             }
 
-            .category-title {
-                font-size: 1.1rem;
+            .stat-card {
+                padding: 12px;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
             }
         }
 
@@ -403,6 +604,7 @@
                             <div class="item">Cursor</div>
                             <div class="item">GitHub Copilot</div>
                             <div class="item">v0.dev</div>
+                            <div class="item highlight clickable" data-tooltip="Amazon 規格驅動的 AI IDE - 點擊查看詳細分析" data-link="amazon-kiro-ide-presentation.html">Amazon Kiro IDE</div>
                         </div>
                     </div>
 
@@ -505,11 +707,11 @@
                     <div class="stat-label">研究分類</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">40+</div>
+                    <div class="stat-number">41+</div>
                     <div class="stat-label">具體研究項目</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">2</div>
+                    <div class="stat-number">3</div>
                     <div class="stat-label">核心新技術</div>
                 </div>
             </div>
@@ -564,6 +766,14 @@
         categoryItems.forEach(item => {
             item.addEventListener('click', () => {
                 const itemName = item.textContent;
+                const link = item.getAttribute('data-link');
+                
+                // 如果有連結，則開啟連結
+                if (link) {
+                    window.open(link, '_blank');
+                    return;
+                }
+                
                 // 這裡可以添加顯示詳細信息的邏輯
                 console.log(`點擊了項目: ${itemName}`);
 
