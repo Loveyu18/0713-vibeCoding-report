@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Kiro IDE - 從 Vibe Coding 到 Viable Code 的革命</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #232F3E 0%, #131A22 100%);
+            color: #FFFFFF;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 60px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #FF9900, #FFB84D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide h2 {
+            font-size: 2.8rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #FF9900;
+        }
+
+        .slide h3 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            color: #FFB84D;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #AAAAAA;
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+
+        .content {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 153, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #FF9900;
+        }
+
+        .feature-card h4 {
+            font-size: 1.5rem;
+            color: #FF9900;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #CCCCCC;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 153, 0, 0.3);
+        }
+
+        .comparison-table th {
+            background: rgba(255, 153, 0, 0.2);
+            color: #FF9900;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .checkmark {
+            color: #4CAF50;
+            font-size: 1.2rem;
+        }
+
+        .cross {
+            color: #F44336;
+            font-size: 1.2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #FF9900;
+            color: #232F3E;
+            border: none;
+            padding: 12px 20px;
+            margin: 0 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #FFB84D;
+            transform: scale(1.05);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            color: #AAAAAA;
+            font-size: 1rem;
+        }
+
+        .highlight {
+            color: #FF9900;
+            font-weight: 600;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #FF9900;
+            z-index: 1;
+        }
+
+        .timeline-item {
+            background: #232F3E;
+            border: 2px solid #FF9900;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            z-index: 2;
+            position: relative;
+        }
+
+        .bullet-list {
+            text-align: left;
+            margin: 30px 0;
+        }
+
+        .bullet-list li {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            list-style: none;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .bullet-list li::before {
+            content: '▶';
+            color: #FF9900;
+            font-size: 1rem;
+            position: absolute;
+            left: 0;
+            top: 2px;
+        }
+
+        .architecture-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+        }
+
+        .arch-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF9900;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 0 20px;
+            min-width: 150px;
+        }
+
+        .arch-arrow {
+            color: #FF9900;
+            font-size: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: #FF9900;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #CCCCCC;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+            }
+            
+            .slide h1 {
+                font-size: 2.5rem;
+            }
+            
+            .slide h2 {
+                font-size: 2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: 標題頁 -->
+        <div class="slide active">
+            <div class="content animate-in">
+                <h1>Amazon Kiro IDE</h1>
+                <div class="subtitle">從 Vibe Coding 到 Viable Code 的革命</div>
+                <h3>AI 驅動的規格化開發新時代</h3>
+                <div style="margin-top: 60px; font-size: 1.2rem; color: #AAAAAA;">
+                    發表日期：2025年7月14日<br>
+                    AWS 最新 AI 開發工具深度分析
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: 議程概覽 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>報告大綱</h2>
+                <div class="timeline">
+                    <div class="timeline-item">1</div>
+                    <div class="timeline-item">2</div>
+                    <div class="timeline-item">3</div>
+                    <div class="timeline-item">4</div>
+                    <div class="timeline-item">5</div>
+                </div>
+                <ul class="bullet-list" style="margin-top: 50px;">
+                    <li><span class="highlight">產品概述</span> - Kiro IDE 發表背景與定位</li>
+                    <li><span class="highlight">核心特色</span> - 規格驅動開發的三大創新</li>
+                    <li><span class="highlight">技術架構</span> - Claude AI 與多模態整合</li>
+                    <li><span class="highlight">競爭分析</span> - 與主流 AI IDE 的比較</li>
+                    <li><span class="highlight">市場展望</span> - 機會、挑戰與未來趨勢</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: 產品概述 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>Amazon Kiro IDE 產品概述</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">2025.7.14</div>
+                        <div class="stat-label">正式發表</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">FREE</div>
+                        <div class="stat-label">預覽期間</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">VS Code</div>
+                        <div class="stat-label">基礎架構</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">Claude 4.0</div>
+                        <div class="stat-label">AI 引擎</div>
+                    </div>
+                </div>
+                <ul class="bullet-list">
+                    <li>基於 <span class="highlight">VS Code 開源版本</span> (Code OSS) 開發</li>
+                    <li>整合 <span class="highlight">Anthropic Claude Sonnet 3.7 & 4.0</span> 模型</li>
+                    <li>專注 <span class="highlight">"從 Vibe Coding 到 Viable Code"</span> 的轉換</li>
+                    <li>支援 <span class="highlight">GitHub 和 Google 帳號</span> 登入，無需 AWS 憑證</li>
+                    <li>目標：彌合快速原型與生產就緒系統的差距</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: 三大核心特色 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>Kiro IDE 三大核心特色</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🎯 規格驅動開發</h4>
+                        <p>從高階提示自動生成結構化的 requirements.md、design.md 和 tasks.md，使用 EARS 格式確保需求準確性</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🤖 AI 代理自動化</h4>
+                        <p>Agent Hooks 提供事件驅動自動化，可在檔案儲存或程式碼提交時自動更新文件、生成測試、檢查安全</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👁️ 多模態輸入支援</h4>
+                        <p>可處理架構圖表截圖、資料庫架構圖等視覺內容，並將其整合到程式碼建議和開發流程中</p>
+                    </div>
+                </div>
+                <div style="margin-top: 50px; font-size: 1.3rem; color: #FFB84D;">
+                    <strong>創新亮點：業界首個專注於規格化開發的 AI IDE</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: 規格驅動開發詳解 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>規格驅動開發 (Spec-driven Development)</h2>
+                <div class="architecture-diagram">
+                    <div class="arch-box">
+                        <h4>高階提示</h4>
+                        <p>開發者需求描述</p>
+                    </div>
+                    <div class="arch-arrow">→</div>
+                    <div class="arch-box">
+                        <h4>自動分析</h4>
+                        <p>AI 需求理解</p>
+                    </div>
+                    <div class="arch-arrow">→</div>
+                    <div class="arch-box">
+                        <h4>三檔案生成</h4>
+                        <p>結構化輸出</p>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px;">
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 10px;">
+                        <h4 style="color: #FF9900; margin-bottom: 15px;">📋 requirements.md</h4>
+                        <ul style="text-align: left; font-size: 1rem;">
+                            <li>使用 EARS 格式</li>
+                            <li>結構化需求描述</li>
+                            <li>可追溯性保證</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 10px;">
+                        <h4 style="color: #FF9900; margin-bottom: 15px;">🏗️ design.md</h4>
+                        <ul style="text-align: left; font-size: 1rem;">
+                            <li>系統架構設計</li>
+                            <li>元件關係圖</li>
+                            <li>技術選型說明</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 10px;">
+                        <h4 style="color: #FF9900; margin-bottom: 15px;">✅ tasks.md</h4>
+                        <ul style="text-align: left; font-size: 1rem;">
+                            <li>詳細任務清單</li>
+                            <li>優先級排序</li>
+                            <li>進度追蹤機制</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: 競爭分析比較 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>AI IDE 競爭分析矩陣</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>特性功能</th>
+                            <th>Amazon Kiro</th>
+                            <th>Cursor IDE</th>
+                            <th>GitHub Copilot</th>
+                            <th>Gemini Code Assist</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>規格驅動開發</strong></td>
+                            <td><span class="checkmark">✅ 獨有</span></td>
+                            <td><span class="cross">❌</span></td>
+                            <td><span class="cross">❌</span></td>
+                            <td><span class="cross">❌</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Agent 自動化</strong></td>
+                            <td><span class="checkmark">✅ 完整</span></td>
+                            <td><span style="color: #FFB84D;">⚡ 部分</span></td>
+                            <td><span style="color: #FFB84D;">⚡ 部分</span></td>
+                            <td><span style="color: #FFB84D;">⚡ 部分</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>多模態輸入</strong></td>
+                            <td><span class="checkmark">✅</span></td>
+                            <td><span class="checkmark">✅</span></td>
+                            <td><span class="cross">❌</span></td>
+                            <td><span class="checkmark">✅</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>價格 (月費)</strong></td>
+                            <td>$0 → $19 → $39</td>
+                            <td>$20</td>
+                            <td>$10</td>
+                            <td>$19</td>
+                        </tr>
+                        <tr>
+                            <td><strong>生態整合</strong></td>
+                            <td>AWS 深度整合</td>
+                            <td>獨立跨平台</td>
+                            <td>Microsoft 生態</td>
+                            <td>Google 生態</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="margin-top: 30px; font-size: 1.2rem; color: #FFB84D;">
+                    <strong>🎯 Kiro 獨特優勢：業界唯一的規格驅動 AI IDE</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: 技術架構 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>Kiro IDE 技術架構解析</h2>
+                <div style="display: flex; justify-content: space-between; align-items: stretch; margin: 40px 0;">
+                    <div style="flex: 1; background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 15px; margin: 0 10px;">
+                        <h3 style="color: #FF9900; margin-bottom: 20px;">🏗️ 基礎架構</h3>
+                        <ul class="bullet-list">
+                            <li><strong>Code OSS</strong> - VS Code 開源版本</li>
+                            <li><strong>跨平台支援</strong> - Windows, macOS, Linux</li>
+                            <li><strong>雲端同步</strong> - 設定和專案同步</li>
+                        </ul>
+                    </div>
+                    <div style="flex: 1; background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 15px; margin: 0 10px;">
+                        <h3 style="color: #FF9900; margin-bottom: 20px;">🧠 AI 引擎</h3>
+                        <ul class="bullet-list">
+                            <li><strong>Claude Sonnet 3.7</strong> - 程式碼生成</li>
+                            <li><strong>Claude 4.0</strong> - 複雜推理</li>
+                            <li><strong>多模態處理</strong> - 圖像理解</li>
+                        </ul>
+                    </div>
+                    <div style="flex: 1; background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 15px; margin: 0 10px;">
+                        <h3 style="color: #FF9900; margin-bottom: 20px;">🔗 整合服務</h3>
+                        <ul class="bullet-list">
+                            <li><strong>GitHub 整合</strong> - 版本控制</li>
+                            <li><strong>AWS 服務</strong> - 雲端部署</li>
+                            <li><strong>外部工具</strong> - API 整合</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="background: rgba(255, 153, 0, 0.1); padding: 25px; border-radius: 10px; border-left: 4px solid #FF9900;">
+                    <h4 style="color: #FF9900; margin-bottom: 10px;">🔒 安全與隱私</h4>
+                    <p style="font-size: 1.1rem;">• 程式碼處理遵循企業級安全標準 • 支援本地處理選項 • 符合 GDPR 和各國隱私法規</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: 商業模式與定價 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>Kiro IDE 商業模式分析</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 40px 0;">
+                    <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)); padding: 30px; border-radius: 15px; border: 2px solid #4CAF50;">
+                        <h3 style="color: #4CAF50; margin-bottom: 20px;">🆓 免費版</h3>
+                        <div style="font-size: 2rem; font-weight: 700; color: #4CAF50; margin: 20px 0;">$0/月</div>
+                        <ul class="bullet-list">
+                            <li>50 次 AI 互動/月</li>
+                            <li>基本規格生成</li>
+                            <li>社群支援</li>
+                            <li>個人專案使用</li>
+                        </ul>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(255, 153, 0, 0.2), rgba(255, 153, 0, 0.1)); padding: 30px; border-radius: 15px; border: 2px solid #FF9900;">
+                        <h3 style="color: #FF9900; margin-bottom: 20px;">⭐ Pro 版</h3>
+                        <div style="font-size: 2rem; font-weight: 700; color: #FF9900; margin: 20px 0;">$19/月</div>
+                        <ul class="bullet-list">
+                            <li>1,000 次 AI 互動/月</li>
+                            <li>完整 Agent Hooks</li>
+                            <li>多模態輸入</li>
+                            <li>團隊協作功能</li>
+                        </ul>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(156, 39, 176, 0.1)); padding: 30px; border-radius: 15px; border: 2px solid #9C27B0;">
+                        <h3 style="color: #9C27B0; margin-bottom: 20px;">🚀 Pro+ 版</h3>
+                        <div style="font-size: 2rem; font-weight: 700; color: #9C27B0; margin: 20px 0;">$39/月</div>
+                        <ul class="bullet-list">
+                            <li>3,000 次 AI 互動/月</li>
+                            <li>企業級安全</li>
+                            <li>優先技術支援</li>
+                            <li>AWS 深度整合</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 40px; font-size: 1.2rem; color: #FFB84D;">
+                    <strong>💡 策略定位：介於 GitHub Copilot ($10) 和高端企業方案之間的中段市場</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: 市場機會與挑戰 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>市場機會與挑戰分析</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin: 40px 0;">
+                    <div style="background: rgba(76, 175, 80, 0.1); padding: 30px; border-radius: 15px; border-left: 4px solid #4CAF50;">
+                        <h3 style="color: #4CAF50; margin-bottom: 25px;">🚀 市場機會</h3>
+                        <ul class="bullet-list">
+                            <li><strong>高速成長市場</strong><br>AI IDE 市場年增長率 40%+</li>
+                            <li><strong>規格化需求增加</strong><br>企業對正式開發流程的重視</li>
+                            <li><strong>AWS 客戶基礎</strong><br>現有龐大企業客戶群</li>
+                            <li><strong>差異化定位</strong><br>獨特的規格驅動開發概念</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(244, 67, 54, 0.1); padding: 30px; border-radius: 15px; border-left: 4px solid #F44336;">
+                        <h3 style="color: #F44336; margin-bottom: 25px;">⚠️ 市場挑戰</h3>
+                        <ul class="bullet-list">
+                            <li><strong>激烈競爭</strong><br>微軟、Google 等巨頭競爭</li>
+                            <li><strong>使用習慣改變</strong><br>開發者學習新工作流程阻力</li>
+                            <li><strong>技術成熟度</strong><br>新產品穩定性考驗</li>
+                            <li><strong>生態依賴</strong><br>與 AWS 服務綁定的疑慮</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="background: rgba(255, 193, 7, 0.1); padding: 25px; border-radius: 10px; margin-top: 30px; border: 1px solid #FFC107;">
+                    <h4 style="color: #FFC107; margin-bottom: 15px;">📊 市場預測</h4>
+                    <p style="font-size: 1.1rem;">預計 2025 年將獲得 <span class="highlight">5-10%</span> 的 AI IDE 市場份額，主要來自 <span class="highlight">AWS 企業客戶</span> 和對 <span class="highlight">規格化開發</span> 有需求的團隊</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: 結論與建議 -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h2>結論與建議</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin: 40px 0;">
+                    <div>
+                        <h3 style="color: #FF9900; margin-bottom: 25px;">🎯 核心價值評估</h3>
+                        <ul class="bullet-list">
+                            <li><strong>創新性：⭐⭐⭐⭐⭐</strong><br>規格驅動開發為業界首創</li>
+                            <li><strong>實用性：⭐⭐⭐⭐</strong><br>解決實際開發痛點</li>
+                            <li><strong>競爭力：⭐⭐⭐⭐</strong><br>差異化明顯，技術領先</li>
+                            <li><strong>市場潛力：⭐⭐⭐⭐</strong><br>企業市場需求強勁</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #FF9900; margin-bottom: 25px;">💡 採用建議</h3>
+                        <ul class="bullet-list">
+                            <li><strong>適合對象</strong><br>AWS 用戶、大型開發團隊</li>
+                            <li><strong>最佳場景</strong><br>新專案啟動、規格化需求</li>
+                            <li><strong>導入策略</strong><br>從小型專案開始試用</li>
+                            <li><strong>注意事項</strong><br>評估團隊學習成本</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(255, 153, 0, 0.2), rgba(255, 153, 0, 0.1)); padding: 30px; border-radius: 15px; margin-top: 40px; text-align: center;">
+                    <h3 style="color: #FF9900; margin-bottom: 20px;">🔮 未來展望</h3>
+                    <p style="font-size: 1.3rem; line-height: 1.6;">
+                        Amazon Kiro IDE 代表了 <span class="highlight">AI 輔助開發的新方向</span>，從隨興編程轉向規格化開發。
+                        隨著企業對軟體品質要求提升，<span class="highlight">規格驅動開發</span> 將成為主流趨勢。
+                        建議 <span class="highlight">持續關注</span> 其發展並適時評估導入。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Q&A -->
+        <div class="slide">
+            <div class="content animate-in">
+                <h1>Q & A</h1>
+                <div class="subtitle">Questions & Answers</div>
+                <div style="margin-top: 60px;">
+                    <h3 style="color: #FF9900; margin-bottom: 30px;">🤔 常見問題預覽</h3>
+                    <ul class="bullet-list" style="font-size: 1.2rem;">
+                        <li>Kiro IDE 的學習曲線如何？</li>
+                        <li>與現有開發工具的整合難度？</li>
+                        <li>規格驅動開發的實際效益？</li>
+                        <li>企業採用的投資報酬率？</li>
+                        <li>未來的發展路線圖？</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 60px; font-size: 1.1rem; color: #AAAAAA;">
+                    感謝聆聽！歡迎提問與討論
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="prevSlide()">◀ 上一頁</button>
+        <button class="nav-btn" onclick="nextSlide()">下一頁 ▶</button>
+    </div>
+
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">11</span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Add animation
+            slides[currentSlide].querySelector('.content').classList.remove('animate-in');
+            setTimeout(() => {
+                slides[currentSlide].querySelector('.content').classList.add('animate-in');
+            }, 50);
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 'Home') {
+                showSlide(0);
+            } else if (e.key === 'End') {
+                showSlide(totalSlides - 1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
