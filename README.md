@@ -39,6 +39,8 @@
 │       ├── amazon-kiro-ide-requirements.md    # 需求分析
 │       ├── amazon-kiro-ide-design.md          # 設計文件
 │       └── amazon-kiro-ide-tasks.md           # 任務清單
+├── 🛠️ tools/                           # 實用工具
+│   └── ai-prompt-generator.html            # AI Prompt 產生器
 └── 🎨 assets/                          # 資源檔案
     └── images/
         └── 前端研究架構圖.png
@@ -72,6 +74,9 @@
 - **[Vibe Coding 實踐指南](documents/guides/Vibe-Coding-實踐指南.md)**: 完整的實施方法和技巧
 - **[Claude Code 使用手冊](documents/guides/claude-code-user-manual.md)**: AI 開發工具操作指南
 
+### 🛠️ **智能工具**
+- **[AI Prompt 產生器](tools/ai-prompt-generator.html)**: 為不同角色和情境生成專業的 AI 提示詞
+
 ## 🚀 快速開始
 
 ### 查看簡報
@@ -86,6 +91,9 @@ open presentations/amazon-kiro-ide-presentation.html
 
 # Vibe Coding 實踐簡報  
 open presentations/vibe-coding-presentation-simple.html
+
+# AI Prompt 產生器
+open tools/ai-prompt-generator.html
 ```
 
 ### 📱 手機瀏覽
@@ -143,9 +151,10 @@ open presentations/vibe-coding-presentation-simple.html
 
 ## 📊 統計數據
 
-- **📄 文檔總數**: 15+ 個檔案  
+- **📄 文檔總數**: 16+ 個檔案  
 - **🎭 簡報頁數**: 13 頁 (Kiro IDE 分析)
 - **🔬 研究領域**: 3 個主要方向
+- **🛠️ 實用工具**: 1 個智能產生器
 - **⏱️ 專案時程**: 6 天工作計畫
 - **📱 支援設備**: 全平台響應式
 

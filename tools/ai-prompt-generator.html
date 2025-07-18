@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt 產生器 - 智能提示詞工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9ff;
+            border-right: 1px solid #e1e5e9;
+        }
+
+        .output {
+            padding: 30px;
+            background: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
+        }
+
+        .output-section {
+            margin-bottom: 25px;
+        }
+
+        .output-section h3 {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .output-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 150px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .output-box.has-content {
+            background: #ffffff;
+            border-color: #667eea;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .output-box:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .copy-btn:hover {
+            background: #5a67d8;
+        }
+
+        .role-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .role-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .scenario-preview {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #234e52;
+        }
+
+        .tips {
+            background: linear-gradient(135deg, #fef5e7, #fed7aa);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .tips h4 {
+            color: #c05621;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .tips ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .tips li {
+            color: #744210;
+            margin-bottom: 5px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .tips li::before {
+            content: '💡';
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .placeholder-text {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .counter {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                border-right: none;
+                border-bottom: 1px solid #e1e5e9;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 15px;
+            }
+
+            .header, .controls, .output {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .form-control {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .output-box {
+                padding: 15px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* 動畫效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .output-box.updating {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* 成功動畫 */
+        @keyframes success {
+            0% { background-color: #48bb78; }
+            100% { background-color: #667eea; }
+        }
+
+        .copy-btn.copied {
+            animation: success 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Prompt 產生器</h1>
+            <p>為不同角色和情境生成專業的 AI 提示詞</p>
+        </div>
+
+        <div class="main-content">
+            <div class="controls">
+                <div class="form-group">
+                    <label for="role">選擇角色 👨‍💼</label>
+                    <select id="role" class="form-control">
+                        <option value="">請選擇角色...</option>
+                        <option value="developer">前端工程師</option>
+                        <option value="backend">後端工程師</option>
+                        <option value="fullstack">全端工程師</option>
+                        <option value="designer">UI/UX 設計師</option>
+                        <option value="pm">產品經理</option>
+                        <option value="analyst">系統分析師</option>
+                        <option value="devops">DevOps 工程師</option>
+                        <option value="qa">QA 測試工程師</option>
+                        <option value="architect">系統架構師</option>
+                        <option value="student">學生/新手</option>
+                        <option value="consultant">技術顧問</option>
+                        <option value="entrepreneur">創業者</option>
+                    </select>
+                    <div class="role-tags" id="role-tags"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="scenario">選擇情境 🎯</label>
+                    <select id="scenario" class="form-control">
+                        <option value="">請選擇情境...</option>
+                    </select>
+                    <div class="scenario-preview" id="scenario-preview" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="task">具體任務 📝</label>
+                    <textarea id="task" class="form-control" placeholder="請描述你想要 AI 幫助完成的具體任務...例如：設計一個用戶登入頁面、優化資料庫查詢效能、分析競品功能等"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="context">補充背景 📋</label>
+                    <textarea id="context" class="form-control" placeholder="提供相關背景資訊...例如：專案規模、技術堆疊、目標用戶、限制條件等"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="output-format">期望輸出格式 📊</label>
+                    <select id="output-format" class="form-control">
+                        <option value="detailed">詳細說明</option>
+                        <option value="step-by-step">步驟清單</option>
+                        <option value="code">程式碼範例</option>
+                        <option value="comparison">比較分析</option>
+                        <option value="summary">重點摘要</option>
+                        <option value="checklist">檢查清單</option>
+                        <option value="template">模板範例</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="generatePrompt()">✨ 生成 Prompt</button>
+                <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清除重設</button>
+
+                <div class="tips">
+                    <h4>💡 使用技巧</h4>
+                    <ul>
+                        <li>選擇最符合你身份的角色</li>
+                        <li>提供具體明確的任務描述</li>
+                        <li>包含相關的技術和背景資訊</li>
+                        <li>指定期望的輸出格式</li>
+                        <li>生成後可直接複製使用</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="output">
+                <div class="output-section">
+                    <h3>🎯 生成的 Prompt</h3>
+                    <div class="output-box" id="generated-prompt">
+                        <span class="placeholder-text">請選擇角色和情境後點擊「生成 Prompt」...</span>
+                        <button class="copy-btn" onclick="copyToClipboard('generated-prompt')">複製</button>
+                        <div class="counter" id="prompt-counter">0 字</div>
+                    </div>
+                </div>
+
+                <div class="output-section">
+                    <h3>📚 建議的後續問題</h3>
+                    <div class="output-box" id="follow-up-questions">
+                        <span class="placeholder-text">生成 Prompt 後會自動顯示相關的後續問題...</span>
+                        <button class="copy-btn" onclick="copyToClipboard('follow-up-questions')">複製</button>
+                    </div>
+                </div>
+
+                <div class="output-section">
+                    <h3>🔧 優化建議</h3>
+                    <div class="output-box" id="optimization-tips">
+                        <span class="placeholder-text">根據你的選擇會提供個人化的優化建議...</span>
+                        <button class="copy-btn" onclick="copyToClipboard('optimization-tips')">複製</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 角色和情境的配置資料
+        const roleData = {
+            developer: {
+                name: "前端工程師",
+                tags: ["JavaScript", "React", "Vue", "CSS", "HTML"],
+                scenarios: {
+                    "code-review": "程式碼審查與優化",
+                    "component-design": "元件設計與開發", 
+                    "performance": "效能優化與調校",
+                    "debugging": "除錯與問題排查",
+                    "ui-implementation": "UI 介面實作",
+                    "testing": "前端測試策略",
+                    "build-optimization": "打包優化"
+                }
+            },
+            backend: {
+                name: "後端工程師",
+                tags: ["API", "Database", "Node.js", "Python", "Java"],
+                scenarios: {
+                    "api-design": "API 設計與開發",
+                    "database-optimization": "資料庫優化",
+                    "security": "安全性實作",
+                    "scalability": "系統擴展性",
+                    "microservices": "微服務架構",
+                    "caching": "快取策略",
+                    "monitoring": "監控與日誌"
+                }
+            },
+            fullstack: {
+                name: "全端工程師",
+                tags: ["Full Stack", "React", "Node.js", "MongoDB", "Docker"],
+                scenarios: {
+                    "architecture-design": "系統架構設計",
+                    "end-to-end-development": "端到端開發",
+                    "integration": "前後端整合",
+                    "deployment": "部署與維運",
+                    "tech-stack-selection": "技術堆疊選擇",
+                    "performance-tuning": "全棧效能調優",
+                    "team-coordination": "團隊協作"
+                }
+            },
+            designer: {
+                name: "UI/UX 設計師", 
+                tags: ["Figma", "Sketch", "使用者體驗", "視覺設計", "原型"],
+                scenarios: {
+                    "user-research": "使用者研究",
+                    "wireframing": "線框圖設計",
+                    "prototyping": "原型製作",
+                    "design-system": "設計系統建立",
+                    "usability-testing": "易用性測試",
+                    "accessibility": "無障礙設計",
+                    "visual-design": "視覺設計"
+                }
+            },
+            pm: {
+                name: "產品經理",
+                tags: ["產品規劃", "需求分析", "專案管理", "數據分析"],
+                scenarios: {
+                    "requirement-analysis": "需求分析與規劃",
+                    "feature-prioritization": "功能優先級排序",
+                    "user-story": "使用者故事撰寫", 
+                    "market-research": "市場調研分析",
+                    "roadmap-planning": "產品路線圖規劃",
+                    "stakeholder-communication": "利害關係人溝通",
+                    "metrics-analysis": "產品指標分析"
+                }
+            },
+            analyst: {
+                name: "系統分析師",
+                tags: ["需求分析", "系統設計", "UML", "文檔撰寫"],
+                scenarios: {
+                    "system-analysis": "系統分析與設計",
+                    "requirement-documentation": "需求文件撰寫",
+                    "process-modeling": "流程建模",
+                    "stakeholder-interview": "利害關係人訪談",
+                    "gap-analysis": "落差分析",
+                    "solution-architecture": "解決方案架構",
+                    "technical-specification": "技術規格書"
+                }
+            },
+            devops: {
+                name: "DevOps 工程師",
+                tags: ["CI/CD", "Docker", "Kubernetes", "AWS", "監控"],
+                scenarios: {
+                    "pipeline-design": "CI/CD 流水線設計",
+                    "infrastructure-automation": "基礎設施自動化",
+                    "monitoring-setup": "監控系統建置",
+                    "container-orchestration": "容器編排",
+                    "security-implementation": "安全性實作",
+                    "performance-optimization": "效能優化",
+                    "disaster-recovery": "災難復原規劃"
+                }
+            },
+            qa: {
+                name: "QA 測試工程師",
+                tags: ["測試策略", "自動化測試", "Bug 追蹤", "品質保證"],
+                scenarios: {
+                    "test-strategy": "測試策略規劃",
+                    "automation-framework": "自動化測試框架",
+                    "performance-testing": "效能測試",
+                    "security-testing": "安全性測試",
+                    "api-testing": "API 測試",
+                    "bug-analysis": "缺陷分析",
+                    "quality-metrics": "品質指標評估"
+                }
+            },
+            architect: {
+                name: "系統架構師",
+                tags: ["系統設計", "微服務", "分散式系統", "技術領導"],
+                scenarios: {
+                    "system-design": "系統架構設計",
+                    "technology-selection": "技術選型",
+                    "scalability-planning": "擴展性規劃",
+                    "migration-strategy": "系統遷移策略",
+                    "performance-architecture": "效能架構設計",
+                    "security-architecture": "安全架構設計",
+                    "team-mentoring": "技術團隊指導"
+                }
+            },
+            student: {
+                name: "學生/新手",
+                tags: ["學習", "練習", "基礎概念", "教學"],
+                scenarios: {
+                    "learning-path": "學習路徑規劃",
+                    "concept-explanation": "概念理解與解釋",
+                    "practice-projects": "實作專案建議",
+                    "skill-assessment": "技能評估",
+                    "career-guidance": "職涯指導",
+                    "resource-recommendation": "學習資源推薦",
+                    "interview-preparation": "面試準備"
+                }
+            },
+            consultant: {
+                name: "技術顧問",
+                tags: ["諮詢", "解決方案", "技術評估", "策略規劃"],
+                scenarios: {
+                    "technology-assessment": "技術評估",
+                    "solution-recommendation": "解決方案建議",
+                    "process-improvement": "流程改善",
+                    "team-training": "團隊培訓",
+                    "project-planning": "專案規劃",
+                    "risk-analysis": "風險分析",
+                    "vendor-selection": "供應商選擇"
+                }
+            },
+            entrepreneur: {
+                name: "創業者",
+                tags: ["商業模式", "產品開發", "市場策略", "團隊建設"],
+                scenarios: {
+                    "mvp-planning": "MVP 規劃",
+                    "market-validation": "市場驗證",
+                    "business-model": "商業模式設計",
+                    "team-building": "團隊組建",
+                    "funding-strategy": "募資策略",
+                    "product-strategy": "產品策略",
+                    "growth-planning": "成長規劃"
+                }
+            }
+        };
+
+        // 情境描述
+        const scenarioDescriptions = {
+            "code-review": "檢視程式碼品質、找出潛在問題並提供改善建議",
+            "component-design": "設計可復用的 UI 元件，考慮最佳實踐",
+            "performance": "分析並優化應用程式的執行效率",
+            "debugging": "系統性地找出並修復程式錯誤",
+            "api-design": "設計 RESTful API 介面與規範",
+            "database-optimization": "優化資料庫查詢效能與結構",
+            "user-research": "了解使用者需求與行為模式",
+            "requirement-analysis": "分析並整理專案需求與規格",
+            "learning-path": "規劃系統性的學習計畫與目標",
+            "architecture-design": "設計全端系統的整體架構",
+            "pipeline-design": "建立自動化的 CI/CD 流程",
+            "test-strategy": "制定完整的測試計畫與策略",
+            "system-design": "設計大型分散式系統架構",
+            "technology-assessment": "評估技術方案的可行性與風險",
+            "mvp-planning": "規劃最小可行產品的開發策略",
+            "end-to-end-development": "完整的前後端開發實作",
+            "monitoring-setup": "建立系統監控與告警機制",
+            "automation-framework": "建立自動化測試框架",
+            "scalability-planning": "規劃系統的擴展策略",
+            "solution-recommendation": "針對特定問題提供解決方案建議",
+            "market-validation": "驗證產品市場需求與定位"
+        };
+
+        // 更新角色標籤
+        function updateRoleTags(roleKey) {
+            const tagsContainer = document.getElementById('role-tags');
+            if (!roleKey || !roleData[roleKey]) {
+                tagsContainer.innerHTML = '';
+                return;
+            }
+            
+            const tags = roleData[roleKey].tags;
+            tagsContainer.innerHTML = tags.map(tag => 
+                `<span class="role-tag">${tag}</span>`
+            ).join('');
+        }
+
+        // 更新情境選項
+        function updateScenarios(roleKey) {
+            const scenarioSelect = document.getElementById('scenario');
+            const preview = document.getElementById('scenario-preview');
+            
+            scenarioSelect.innerHTML = '<option value="">請選擇情境...</option>';
+            preview.style.display = 'none';
+            
+            if (!roleKey || !roleData[roleKey]) return;
+            
+            const scenarios = roleData[roleKey].scenarios;
+            Object.entries(scenarios).forEach(([key, value]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = value;
+                scenarioSelect.appendChild(option);
+            });
+        }
+
+        // 顯示情境預覽
+        function showScenarioPreview(scenarioKey) {
+            const preview = document.getElementById('scenario-preview');
+            if (scenarioKey && scenarioDescriptions[scenarioKey]) {
+                preview.textContent = scenarioDescriptions[scenarioKey];
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // 生成 Prompt
+        function generatePrompt() {
+            const role = document.getElementById('role').value;
+            const scenario = document.getElementById('scenario').value;
+            const task = document.getElementById('task').value.trim();
+            const context = document.getElementById('context').value.trim();
+            const outputFormat = document.getElementById('output-format').value;
+
+            if (!role || !scenario || !task) {
+                alert('請至少選擇角色、情境並填寫具體任務！');
+                return;
+            }
+
+            const roleInfo = roleData[role];
+            const scenarioName = roleInfo.scenarios[scenario];
+            
+            // 生成主要 Prompt
+            let prompt = generateMainPrompt(roleInfo, scenarioName, task, context, outputFormat);
+            
+            // 生成後續問題
+            let followUp = generateFollowUpQuestions(role, scenario);
+            
+            // 生成優化建議
+            let optimization = generateOptimizationTips(role, scenario, outputFormat);
+
+            // 更新輸出區域
+            updateOutputBox('generated-prompt', prompt);
+            updateOutputBox('follow-up-questions', followUp);
+            updateOutputBox('optimization-tips', optimization);
+        }
+
+        function generateMainPrompt(roleInfo, scenarioName, task, context, outputFormat) {
+            let prompt = `你是一位經驗豐富的${roleInfo.name}，專精於${roleInfo.tags.join('、')}等技術領域。
+
+**任務情境**: ${scenarioName}
+
+**具體任務**: 
+${task}`;
+
+            if (context) {
+                prompt += `
+
+**背景資訊**: 
+${context}`;
+            }
+
+            // 根據輸出格式添加特定要求
+            const formatInstructions = {
+                'detailed': '請提供詳細的說明，包含原理、方法和注意事項',
+                'step-by-step': '請以清楚的步驟列表形式回答，每個步驟都要具體可執行',
+                'code': '請提供實際的程式碼範例，並加上註解說明',
+                'comparison': '請提供比較分析，列出不同方案的優缺點',
+                'summary': '請提供重點摘要，突出最關鍵的資訊',
+                'checklist': '請提供檢查清單格式，方便逐項確認',
+                'template': '請提供可直接使用的模板或框架'
+            };
+
+            prompt += `
+
+**輸出要求**: 
+${formatInstructions[outputFormat]}
+
+**專業建議**: 
+請基於最佳實踐和業界標準，提供專業且實用的解決方案。如果有多種解決方式，請說明各自的適用場景。`;
+
+            return prompt;
+        }
+
+        function generateFollowUpQuestions(role, scenario) {
+            const defaultQuestions = [
+                "如何進一步優化這個解決方案？",
+                "有哪些替代方案可以考慮？",
+                "實施過程中可能遇到什麼挑戰？",
+                "如何衡量成果的成功與否？"
+            ];
+
+            const roleSpecificQuestions = {
+                'developer': [
+                    "程式碼的可維護性如何改善？",
+                    "有哪些潛在的效能瓶頸？", 
+                    "如何增加測試覆蓋率？",
+                    "程式碼安全性有什麼要注意的？"
+                ],
+                'backend': [
+                    "API 的擴展性如何確保？",
+                    "資料庫效能如何進一步優化？",
+                    "安全性防護有哪些要注意的？",
+                    "如何處理高併發情況？"
+                ],
+                'fullstack': [
+                    "前後端整合有什麼最佳實踐？",
+                    "如何確保系統的一致性？",
+                    "部署策略有什麼建議？",
+                    "技術債務如何管理？"
+                ],
+                'designer': [
+                    "如何驗證設計決策的有效性？",
+                    "使用者體驗如何量化評估？",
+                    "設計系統如何保持一致性？",
+                    "跨平台設計有什麼注意事項？"
+                ],
+                'pm': [
+                    "如何平衡不同利害關係人的需求？",
+                    "產品指標如何設定和追蹤？",
+                    "市場變化如何應對？",
+                    "團隊資源如何最佳化配置？"
+                ],
+                'analyst': [
+                    "需求變更如何有效管理？",
+                    "系統複雜度如何控制？",
+                    "文檔維護有什麼策略？",
+                    "利害關係人溝通如何改善？"
+                ],
+                'devops': [
+                    "自動化程度如何進一步提升？",
+                    "監控和告警策略如何優化？",
+                    "安全性如何整合到流程中？",
+                    "成本控制有什麼方法？"
+                ],
+                'qa': [
+                    "測試覆蓋率如何提升？",
+                    "自動化測試的投資報酬率如何？",
+                    "品質指標如何制定？",
+                    "測試環境如何管理？"
+                ],
+                'architect': [
+                    "系統演進策略如何規劃？",
+                    "技術債務如何評估和處理？",
+                    "團隊技術能力如何提升？",
+                    "架構決策如何記錄和傳承？"
+                ],
+                'consultant': [
+                    "解決方案的可行性如何評估？",
+                    "變革管理如何進行？",
+                    "ROI 如何計算和呈現？",
+                    "後續支援策略如何規劃？"
+                ],
+                'entrepreneur': [
+                    "市場時機如何把握？",
+                    "競爭優勢如何建立？",
+                    "資源配置如何優化？",
+                    "風險管理策略如何制定？"
+                ],
+                'student': [
+                    "學習進度如何追蹤？",
+                    "實作經驗如何累積？",
+                    "職涯方向如何選擇？",
+                    "技能證明如何建立？"
+                ]
+            };
+
+            const questions = roleSpecificQuestions[role] || defaultQuestions;
+            return questions.map((q, i) => `${i + 1}. ${q}`).join('\n\n');
+        }
+
+        function generateOptimizationTips(role, scenario, outputFormat) {
+            const tips = [
+                "💡 **明確性**: 提供更具體的需求和限制條件",
+                "🎯 **範圍界定**: 明確定義問題的邊界和範圍",
+                "📊 **數據支持**: 提供相關的數據或指標要求",
+                "🔄 **迭代改進**: 可以基於初步結果進一步細化需求",
+                "🤝 **協作考量**: 考慮團隊其他成員的需求和限制"
+            ];
+
+            const roleSpecificTips = {
+                'developer': [
+                    "🛠️ **技術細節**: 指定使用的框架、版本和環境",
+                    "🧪 **測試需求**: 明確測試策略和覆蓋率要求"
+                ],
+                'backend': [
+                    "🗄️ **資料庫資訊**: 說明資料庫類型、版本和資料量",
+                    "🔒 **安全需求**: 明確安全等級和合規要求"
+                ],
+                'fullstack': [
+                    "🔗 **整合需求**: 說明前後端整合的具體需求",
+                    "📦 **部署環境**: 明確部署平台和環境限制"
+                ],
+                'designer': [
+                    "🎨 **設計規範**: 提及品牌指南和設計系統約束",
+                    "📱 **平台考量**: 明確目標設備和瀏覽器支援"
+                ],
+                'pm': [
+                    "📈 **商業目標**: 明確業務指標和成功標準",
+                    "⏰ **時程限制**: 說明專案時程和里程碑"
+                ],
+                'analyst': [
+                    "📊 **利害關係人**: 列出所有相關的利害關係人",
+                    "📋 **現狀描述**: 詳細描述目前的系統狀況"
+                ],
+                'devops': [
+                    "☁️ **基礎設施**: 說明現有的基礎設施和限制",
+                    "⚙️ **自動化程度**: 描述目前的自動化水準"
+                ],
+                'qa': [
+                    "🧪 **測試範圍**: 明確需要測試的功能範圍",
+                    "📊 **品質標準**: 說明期望的品質標準和指標"
+                ],
+                'architect': [
+                    "🏗️ **系統規模**: 描述系統的規模和複雜度",
+                    "📈 **成長預期**: 說明預期的使用者增長和負載"
+                ],
+                'consultant': [
+                    "🎯 **客戶背景**: 詳細描述客戶的行業和背景",
+                    "💰 **預算範圍**: 說明預算限制和投資期望"
+                ],
+                'entrepreneur': [
+                    "💡 **商業模式**: 描述核心的商業模式和獲利方式",
+                    "🎯 **目標市場**: 明確目標客群和市場定位"
+                ],
+                'student': [
+                    "📚 **學習目標**: 明確想要達成的學習目標",
+                    "⏰ **時間安排**: 說明可用的學習時間和進度期望"
+                ]
+            };
+
+            const specificTips = roleSpecificTips[role] || [];
+            return [...tips, ...specificTips].join('\n\n');
+        }
+
+        function updateOutputBox(elementId, content) {
+            const box = document.getElementById(elementId);
+            box.textContent = content;
+            box.classList.add('has-content', 'updating');
+            
+            // 更新字數統計
+            if (elementId === 'generated-prompt') {
+                const counter = document.getElementById('prompt-counter');
+                counter.textContent = `${content.length} 字`;
+            }
+            
+            setTimeout(() => {
+                box.classList.remove('updating');
+            }, 500);
+        }
+
+        // 複製功能
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const button = element.querySelector('.copy-btn');
+                button.textContent = '已複製!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = '複製';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                // 備用複製方法
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const button = element.querySelector('.copy-btn');
+                button.textContent = '已複製!';
+                setTimeout(() => {
+                    button.textContent = '複製';
+                }, 2000);
+            });
+        }
+
+        // 清除所有輸入
+        function clearAll() {
+            if (confirm('確定要清除所有輸入內容嗎？')) {
+                document.getElementById('role').value = '';
+                document.getElementById('scenario').value = '';
+                document.getElementById('task').value = '';
+                document.getElementById('context').value = '';
+                document.getElementById('output-format').value = 'detailed';
+                
+                updateRoleTags('');
+                updateScenarios('');
+                showScenarioPreview('');
+                
+                // 清除輸出區域
+                ['generated-prompt', 'follow-up-questions', 'optimization-tips'].forEach(id => {
+                    const box = document.getElementById(id);
+                    box.innerHTML = `
+                        <span class="placeholder-text">請選擇角色和情境後點擊「生成 Prompt」...</span>
+                        <button class="copy-btn" onclick="copyToClipboard('${id}')">複製</button>
+                        ${id === 'generated-prompt' ? '<div class="counter" id="prompt-counter">0 字</div>' : ''}
+                    `;
+                    box.classList.remove('has-content');
+                });
+            }
+        }
+
+        // 事件監聽器
+        document.getElementById('role').addEventListener('change', function() {
+            const roleKey = this.value;
+            updateRoleTags(roleKey);
+            updateScenarios(roleKey);
+            showScenarioPreview('');
+        });
+
+        document.getElementById('scenario').addEventListener('change', function() {
+            showScenarioPreview(this.value);
+        });
+
+        // 自動調整文字區域高度
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+            });
+        });
+
+        // 快捷鍵支援
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    generatePrompt();
+                } else if (e.key === 'r') {
+                    e.preventDefault();
+                    clearAll();
+                }
+            }
+        });
+
+        // 初始化提示
+        setTimeout(() => {
+            const tips = [
+                "💡 提示：使用 Ctrl/Cmd + Enter 快速生成 Prompt",
+                "🎯 建議：提供越詳細的任務描述，生成的 Prompt 越精準",
+                "🔄 技巧：可以多次調整參數來優化結果"
+            ];
+            
+            console.log('%c🤖 AI Prompt 產生器', 'color: #667eea; font-size: 16px; font-weight: bold;');
+            tips.forEach(tip => console.log(`%c${tip}`, 'color: #764ba2;'));
+        }, 1000);
+    </script>
+</body>
+</html>
