@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI工具研究規劃 - 開發流程</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.85);
+            --text-dark: #333333;
+            --accent-blue: #007AFF;
+            --accent-purple: #5856D6;
+            --accent-teal: #30D158;
+            --accent-orange: #FF9500;
+            --accent-pink: #FF2D92;
+            --accent-indigo: #5AC8FA;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.4) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 122, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--text-primary) 0%, rgba(255, 255, 255, 0.6) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            letter-spacing: 0.01em;
+        }
+
+        .workflow-timeline {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .workflow-timeline::before {
+            content: '';
+            position: absolute;
+            left: 2rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, 
+                var(--accent-blue) 0%,
+                var(--accent-purple) 20%,
+                var(--accent-teal) 40%,
+                var(--accent-orange) 60%,
+                var(--accent-pink) 80%,
+                var(--accent-indigo) 100%
+            );
+            border-radius: 1px;
+        }
+
+        .phase-container {
+            position: relative;
+            margin-left: 5rem;
+        }
+
+        .phase-indicator {
+            position: absolute;
+            left: -3.5rem;
+            top: 1.5rem;
+            width: 3rem;
+            height: 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            z-index: 2;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .phase-indicator:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .phase-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .phase-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .phase-header {
+            margin-bottom: 2rem;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+
+        .phase-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .research-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .research-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .tools-icon {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        }
+
+        .directions-icon {
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-orange));
+        }
+
+        .research-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .research-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            color: var(--text-primary);
+        }
+
+        .research-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .research-item:hover::before {
+            left: 100%;
+        }
+
+        .research-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(4px);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-left: auto;
+            flex-shrink: 0;
+            border: 2px solid;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: #FFC107;
+        }
+
+        .status-researching {
+            background: rgba(0, 122, 255, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        .status-researching::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-shared {
+            background: rgba(48, 209, 88, 0.2);
+            border-color: var(--accent-teal);
+        }
+
+        .status-shared::after {
+            content: '✓';
+            color: var(--accent-teal);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .research-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .progress-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .progress-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 3px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .legend-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .legend-grid {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .workflow-timeline::before {
+                left: 1rem;
+            }
+            
+            .phase-container {
+                margin-left: 3rem;
+            }
+            
+            .phase-indicator {
+                left: -2.5rem;
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.9rem;
+            }
+            
+            .research-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .phase-card {
+                padding: 1.5rem;
+            }
+            
+            .legend-grid {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AI工具研究規劃</h1>
+        <p>六大開發流程的AI工具研究與導入策略</p>
+    </div>
+
+    <div class="container">
+        <div class="legend">
+            <h3 class="legend-title">研究狀態說明</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <span class="status-badge status-pending"></span>
+                    <span>待研究</span>
+                </div>
+                <div class="legend-item">
+                    <span class="status-badge status-researching"></span>
+                    <span>研究中</span>
+                </div>
+                <div class="legend-item">
+                    <span class="status-badge status-shared"></span>
+                    <span>已分享</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="workflow-timeline">
+            <!-- 需求溝通階段 -->
+            <div class="phase-container">
+                <div class="phase-indicator">1</div>
+                <div class="phase-card">
+                    <div class="phase-header">
+                        <h2 class="phase-title">需求溝通階段</h2>
+                        <p class="phase-subtitle">AI輔助需求分析與溝通</p>
+                    </div>
+                    <div class="research-grid">
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon tools-icon">🛠</span>
+                                工具類型研究
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>自然語言處理工具（需求文件自動分析）</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>AI會議摘要工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>智能需求管理平台</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>自動化用戶故事生成器</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon directions-icon">🎯</span>
+                                研究方向
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>如何用AI將模糊需求轉化為結構化規格</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>語音轉文字與會議重點提取的準確性</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>多語言需求溝通的AI翻譯品質</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>需求變更追蹤的智能化管理</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>研究進度</span>
+                            <span>20%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 20%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 視覺設計階段 -->
+            <div class="phase-container">
+                <div class="phase-indicator">2</div>
+                <div class="phase-card">
+                    <div class="phase-header">
+                        <h2 class="phase-title">視覺設計階段</h2>
+                        <p class="phase-subtitle">AI輔助設計創作與優化</p>
+                    </div>
+                    <div class="research-grid">
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon tools-icon">🎨</span>
+                                工具類型研究
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>AI圖像生成工具（Midjourney、DALL-E、Stable Diffusion）</span>
+                                    <span class="status-badge status-researching"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>設計系統自動化工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>色彩搭配AI助手</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>UI/UX設計評估工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon directions-icon">🎯</span>
+                                研究方向
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>從需求文本到視覺設計的自動轉換</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>設計風格一致性的AI檢測</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>無障礙設計的AI輔助檢查</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>設計素材的智能版權檢測</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>研究進度</span>
+                            <span>35%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 35%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 版面確認階段 -->
+            <div class="phase-container">
+                <div class="phase-indicator">3</div>
+                <div class="phase-card">
+                    <div class="phase-header">
+                        <h2 class="phase-title">版面確認階段</h2>
+                        <p class="phase-subtitle">AI輔助設計評估與優化</p>
+                    </div>
+                    <div class="research-grid">
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon tools-icon">📐</span>
+                                工具類型研究
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>自動化設計審查工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>響應式設計測試AI</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>用戶體驗評估AI</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>設計規範檢查工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon directions-icon">🎯</span>
+                                研究方向
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>設計稿與品牌規範的自動對比</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>多裝置適配性的AI預測</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>用戶體驗指標的AI評估</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>設計變更影響的智能分析</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>研究進度</span>
+                            <span>15%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 切板與靜態頁面製作階段 -->
+            <div class="phase-container">
+                <div class="phase-indicator">4</div>
+                <div class="phase-card">
+                    <div class="phase-header">
+                        <h2 class="phase-title">切板與靜態頁面製作階段</h2>
+                        <p class="phase-subtitle">AI輔助前端開發</p>
+                    </div>
+                    <div class="research-grid">
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon tools-icon">💻</span>
+                                工具類型研究
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>設計稿轉代碼工具（Figma to Code、Locofy）</span>
+                                    <span class="status-badge status-shared"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>AI代碼生成工具（GitHub Copilot、Tabnine）</span>
+                                    <span class="status-badge status-researching"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>自動化CSS優化工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>響應式布局AI助手</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon directions-icon">🎯</span>
+                                研究方向
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>設計稿到HTML/CSS的轉換準確度</span>
+                                    <span class="status-badge status-researching"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>語義化標籤的AI自動生成</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>跨瀏覽器兼容性的AI檢測</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>效能優化建議的智能生成</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>研究進度</span>
+                            <span>60%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系統程式開發階段 -->
+            <div class="phase-container">
+                <div class="phase-indicator">5</div>
+                <div class="phase-card">
+                    <div class="phase-header">
+                        <h2 class="phase-title">系統程式開發階段</h2>
+                        <p class="phase-subtitle">AI輔助程式開發與維護</p>
+                    </div>
+                    <div class="research-grid">
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon tools-icon">⚙️</span>
+                                工具類型研究
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>AI程式碼助手（GitHub Copilot、CodeWhisperer）</span>
+                                    <span class="status-badge status-shared"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>自動化測試生成工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>代碼品質分析AI</span>
+                                    <span class="status-badge status-researching"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>智能除錯工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon directions-icon">🎯</span>
+                                研究方向
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>代碼自動完成的準確性與效率</span>
+                                    <span class="status-badge status-researching"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>程式邏輯錯誤的AI檢測</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>安全漏洞的智能掃描</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>重構建議的AI生成</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>研究進度</span>
+                            <span>45%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 測試與驗收階段 -->
+            <div class="phase-container">
+                <div class="phase-indicator">6</div>
+                <div class="phase-card">
+                    <div class="phase-header">
+                        <h2 class="phase-title">測試與驗收階段</h2>
+                        <p class="phase-subtitle">AI輔助測試自動化</p>
+                    </div>
+                    <div class="research-grid">
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon tools-icon">🧪</span>
+                                工具類型研究
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>自動化測試生成工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>AI視覺測試工具</span>
+                                    <span class="status-badge status-researching"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>效能測試AI分析</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>缺陷預測工具</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="research-section">
+                            <h4 class="section-title">
+                                <span class="section-icon directions-icon">🎯</span>
+                                研究方向
+                            </h4>
+                            <ul class="research-list">
+                                <li class="research-item">
+                                    <span>測試案例的智能生成</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>視覺回歸測試的AI檢測</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>效能瓶頸的AI診斷</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                                <li class="research-item">
+                                    <span>測試覆蓋率的智能優化</span>
+                                    <span class="status-badge status-pending"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>研究進度</span>
+                            <span>25%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 25%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 為狀態徽章添加點擊事件
+        document.querySelectorAll('.research-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const badge = this.querySelector('.status-badge');
+                if (badge.classList.contains('status-pending')) {
+                    badge.classList.remove('status-pending');
+                    badge.classList.add('status-researching');
+                } else if (badge.classList.contains('status-researching')) {
+                    badge.classList.remove('status-researching');
+                    badge.classList.add('status-shared');
+                } else {
+                    badge.classList.remove('status-shared');
+                    badge.classList.add('status-pending');
+                }
+                updateProgressBar(this.closest('.phase-container'));
+            });
+        });
+
+        function updateProgressBar(phaseContainer) {
+            const badges = phaseContainer.querySelectorAll('.status-badge');
+            const sharedCount = phaseContainer.querySelectorAll('.status-shared').length;
+            const researchingCount = phaseContainer.querySelectorAll('.status-researching').length;
+            const totalCount = badges.length;
+            
+            const progressPercent = Math.round(((sharedCount * 1 + researchingCount * 0.5) / totalCount) * 100);
+            const progressBar = phaseContainer.querySelector('.progress-fill');
+            const progressLabel = phaseContainer.querySelector('.progress-label span:last-child');
+            
+            progressBar.style.width = progressPercent + '%';
+            progressLabel.textContent = progressPercent + '%';
+        }
+
+        // 初始化進度條
+        document.querySelectorAll('.phase-container').forEach(updateProgressBar);
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('body::before');
+            if (parallax) {
+                parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // 添加卡片進入動畫
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.phase-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
