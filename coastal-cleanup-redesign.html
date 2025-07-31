@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海岸清潔行動 - Coastal Clean-up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Primary Ocean Blues */
+            --primary-50: #EFF6FF;
+            --primary-100: #DBEAFE;
+            --primary-500: #3B82F6;
+            --primary-600: #2563EB;
+            --primary-700: #1D4ED8;
+            --primary-900: #1E3A8A;
+
+            /* Secondary Ocean Teals */
+            --secondary-50: #F0FDFA;
+            --secondary-500: #14B8A6;
+            --secondary-600: #0D9488;
+
+            /* Success/Nature Greens */
+            --success-50: #ECFDF5;
+            --success-500: #10B981;
+            --success-600: #059669;
+
+            /* Neutral Grays */
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-600: #4B5563;
+            --gray-900: #111827;
+
+            /* Gradients */
+            --ocean-gradient: linear-gradient(135deg, #0EA5E9, #3B82F6, #6366F1);
+            --success-gradient: linear-gradient(135deg, #10B981, #059669);
+            --hero-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+
+            /* Font Stack */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: var(--gray-900);
+            background: var(--gray-50);
+        }
+
+        /* Header & Navigation */
+        .header {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--ocean-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-500);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--hero-gradient);
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M0 50c25 0 25-25 50-25s25 25 50 25v50H0z" fill="rgba(255,255,255,0.03)"/></svg>') repeat;
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #60A5FA, #3B82F6, #1D4ED8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            background: var(--ocean-gradient);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .floating-element {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: -60px 20px 60px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 48px;
+            color: var(--gray-900);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin: 64px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--ocean-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-600);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        /* Data Visualization Section */
+        .data-section {
+            background: linear-gradient(to bottom, #F8FAFC, #EFF6FF);
+            padding: 80px 0;
+        }
+
+        .map-stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .map-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+            background: white;
+            padding: 32px;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 400px;
+            background: var(--primary-50);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-600);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .data-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .data-point {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .data-point-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .data-point-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Gallery Section */
+        .gallery-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 48px 0;
+        }
+
+        .gallery-item {
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: var(--gray-100);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gray-900);
+            color: white;
+            padding: 64px 0 32px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 32px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .map-stats-container {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .data-points {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 60px 0;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 1.875rem;
+            }
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-on-scroll {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">🌊 Coastal Clean-up</a>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-item">首頁</a></li>
+                <li><a href="#" class="nav-item">活動資訊</a></li>
+                <li><a href="#" class="nav-item">統計數據</a></li>
+                <li><a href="#" class="nav-item">照片集</a></li>
+                <li><a href="#" class="nav-item">關於我們</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">守護海岸線</h1>
+            <p class="hero-subtitle">結合社群力量，清潔美麗海岸，為下一代留下乾淨的海洋環境</p>
+            <a href="#" class="cta-button">
+                <i class="fas fa-hand-holding-heart"></i>
+                立即參與
+            </a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="floating-element">
+                <h2 class="section-title">活動成果統計</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number">2,847</div>
+                        <div class="stat-label">參與志工人數</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">清潔地點</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <div class="stat-number">15.2</div>
+                        <div class="stat-label">清除垃圾 (噸)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-number">48</div>
+                        <div class="stat-label">活動場次</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Visualization Section -->
+    <section class="data-section">
+        <div class="container">
+            <h2 class="section-title">全台清潔活動分布</h2>
+            <div class="map-stats-container">
+                <div class="map-container">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map" style="font-size: 3rem; color: var(--primary-500);"></i>
+                        <div style="margin-left: 16px;">
+                            <div style="font-size: 1.5rem; font-weight: 700;">台灣海岸清潔地圖</div>
+                            <div style="font-size: 1rem; opacity: 0.7;">互動式地圖顯示各地區參與情況</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-points">
+                    <div class="data-point">
+                        <div class="data-point-value">北部</div>
+                        <div class="data-point-label">892 人參與</div>
+                    </div>
+                    <div class="data-point">
+                        <div class="data-point-value">中部</div>
+                        <div class="data-point-label">756 人參與</div>
+                    </div>
+                    <div class="data-point">
+                        <div class="data-point-value">南部</div>
+                        <div class="data-point-label">1,045 人參與</div>
+                    </div>
+                    <div class="data-point">
+                        <div class="data-point-value">東部</div>
+                        <div class="data-point-label">154 人參與</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <h2 class="section-title">活動照片集錦</h2>
+            <div class="image-gallery">
+                <div class="gallery-item">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-camera" style="font-size: 2rem; margin-right: 8px;"></i>
+                        志工清潔海灘
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-users" style="font-size: 2rem; margin-right: 8px;"></i>
+                        團隊合作精神
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-recycle" style="font-size: 2rem; margin-right: 8px;"></i>
+                        垃圾分類回收
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-heart" style="font-size: 2rem; margin-right: 8px;"></i>
+                        環保教育推廣
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-water" style="font-size: 2rem; margin-right: 8px;"></i>
+                        乾淨的海岸線
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-award" style="font-size: 2rem; margin-right: 8px;"></i>
+                        成果展示
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>聯絡資訊</h3>
+                    <p>電話: (02) 2345-6789</p>
+                    <p>Email: info@coastalcleanup.tw</p>
+                    <p>地址: 台北市中正區環保路123號</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速連結</h3>
+                    <a href="#">最新活動</a>
+                    <a href="#">志工招募</a>
+                    <a href="#">成果報告</a>
+                    <a href="#">媒體報導</a>
+                </div>
+                <div class="footer-section">
+                    <h3>社群媒體</h3>
+                    <a href="#">Facebook</a>
+                    <a href="#">Instagram</a>
+                    <a href="#">YouTube</a>
+                    <a href="#">LINE官方帳號</a>
+                </div>
+                <div class="footer-section">
+                    <h3>關於我們</h3>
+                    <p>致力於海洋環境保護，透過社群力量清潔台灣美麗的海岸線，為下一代留下更好的環境。</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 海岸清潔行動. 版權所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple scroll animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-on-scroll');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all stat cards and gallery items
+        document.querySelectorAll('.stat-card, .gallery-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Simple counter animation for stats
+        const animateCounter = (element, target) => {
+            const duration = 2000;
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString();
+            }, 16);
+        };
+
+        // Animate counters when they come into view
+        const statNumbers = document.querySelectorAll('.stat-number');
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.textContent.replace(/,/g, ''));
+                    animateCounter(entry.target, target);
+                    statObserver.unobserve(entry.target);
+                }
+            });
+        });
+
+        statNumbers.forEach(el => statObserver.observe(el));
+    </script>
+</body>
+</html>

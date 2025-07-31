@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COASTAL CLEAN-UP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        /* Header */
+        .header {
+            background: #4a90e2;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            background: #e8f4fd;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 400px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400"><rect width="800" height="400" fill="%23e8f4fd"/><text x="400" y="200" text-anchor="middle" font-size="24" fill="%234a90e2">穿藍色衣服的志工群體照片</text></svg>') center/cover;
+            position: relative;
+        }
+
+        .hero-stats {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: white;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .hero-stats .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .hero-stats .label {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: white;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Stats Grid */
+        .stats-section {
+            display: grid;
+            grid-template-columns: 1fr 300px 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            align-items: start;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Taiwan Map */
+        .taiwan-map {
+            background: #f0f8ff;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .map-placeholder {
+            background: #4a90e2;
+            color: white;
+            border-radius: 8px;
+            padding: 60px 20px;
+            margin-bottom: 10px;
+        }
+
+        .map-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4a90e2;
+        }
+
+        /* Data Tables */
+        .tables-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .data-table {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #4a90e2;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .table-content {
+            background: white;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-cell {
+            padding: 12px 15px;
+            border-right: 1px solid #eee;
+        }
+
+        .table-cell:last-child {
+            border-right: none;
+        }
+
+        .table-cell.header {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        /* Photo Gallery */
+        .gallery-section {
+            margin: 60px 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #4a90e2;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .photo-item {
+            aspect-ratio: 4/3;
+            background: #e8f4fd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a90e2;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #d0e7ff;
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .bottom-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .bottom-text {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .bottom-text h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #4a90e2;
+        }
+
+        .bottom-photos {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .bottom-photo {
+            aspect-ratio: 1;
+            background: #34495e;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bdc3c7;
+            font-size: 12px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a252f;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        .footer-info {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .stats-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .tables-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .photo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bottom-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>COASTAL CLEAN-UP</h1>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-image">
+            <div class="hero-stats">
+                <div class="number">2,847</div>
+                <div class="label">參與人數</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Stats Section -->
+            <section class="stats-section">
+                <!-- Left Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="number">156</div>
+                        <div class="label">清潔地點</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">48</div>
+                        <div class="label">活動場次</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">15.2</div>
+                        <div class="label">清除垃圾(噸)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">892</div>
+                        <div class="label">志工時數</div>
+                    </div>
+                </div>
+
+                <!-- Taiwan Map -->
+                <div class="taiwan-map">
+                    <div class="map-title">全台清潔分佈圖</div>
+                    <div class="map-placeholder">
+                        台灣地圖
+                    </div>
+                </div>
+
+                <!-- Right Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="number">北部</div>
+                        <div class="label">892人</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">中部</div>
+                        <div class="label">756人</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">南部</div>
+                        <div class="label">1,045人</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">東部</div>
+                        <div class="label">154人</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Tables -->
+            <section class="tables-section">
+                <!-- Left Table -->
+                <div class="data-table">
+                    <div class="table-header">活動統計詳情</div>
+                    <div class="table-content">
+                        <div class="table-row">
+                            <div class="table-cell header">項目</div>
+                            <div class="table-cell header">數量</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">寶特瓶</div>
+                            <div class="table-cell">3,245個</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">塑膠袋</div>
+                            <div class="table-cell">1,876個</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">菸蒂</div>
+                            <div class="table-cell">8,932個</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">其他垃圾</div>
+                            <div class="table-cell">2.8噸</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Table -->
+                <div class="data-table">
+                    <div class="table-header">月度清潔成果</div>
+                    <div class="table-content">
+                        <div class="table-row">
+                            <div class="table-cell header">月份</div>
+                            <div class="table-cell header">清除量(kg)</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">一月</div>
+                            <div class="table-cell">1,245</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">二月</div>
+                            <div class="table-cell">1,876</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">三月</div>
+                            <div class="table-cell">2,134</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">四月</div>
+                            <div class="table-cell">1,987</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Photo Gallery -->
+            <section class="gallery-section">
+                <h2 class="section-title">活動照片集錦</h2>
+                <div class="photo-grid">
+                    <div class="photo-item">志工清潔海灘</div>
+                    <div class="photo-item">垃圾分類回收</div>
+                    <div class="photo-item">團隊合作精神</div>
+                    <div class="photo-item">環保教育宣導</div>
+                    <div class="photo-item">清潔成果展示</div>
+                    <div class="photo-item">社區居民參與</div>
+                    <div class="photo-item">淨灘後合影</div>
+                    <div class="photo-item">乾淨的海岸線</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Bottom Section -->
+    <section class="bottom-section">
+        <div class="container">
+            <div class="bottom-content">
+                <div class="bottom-text">
+                    <h3>個人宣言</h3>
+                    <p>每一次的海岸清潔行動，都是我們對這片土地的承諾。透過每個人的參與，我們不僅清理了海岸線的垃圾，更重要的是喚醒了環保意識。讓我們持續努力，為下一代留下更乾淨美麗的海洋環境。</p>
+                </div>
+                <div class="bottom-photos">
+                    <div class="bottom-photo">清潔前後對比</div>
+                    <div class="bottom-photo">志工培訓</div>
+                    <div class="bottom-photo">成果展示</div>
+                    <div class="bottom-photo">媒體報導</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="#" class="footer-link">關於我們</a>
+                <a href="#" class="footer-link">活動資訊</a>
+                <a href="#" class="footer-link">志工招募</a>
+                <a href="#" class="footer-link">聯絡我們</a>
+                <a href="#" class="footer-link">相關連結</a>
+            </div>
+            <div class="footer-info">
+                <p>&copy; 2025 海岸清潔行動 版權所有 | 聯絡電話: (02) 2345-6789 | Email: info@coastalcleanup.tw</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

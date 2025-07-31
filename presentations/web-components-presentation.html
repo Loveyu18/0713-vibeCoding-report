@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Components - 現代化前端元件標準</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #FFFFFF;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 60px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #FF9900, #FFB84D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .slide h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #FFB84D;
+        }
+
+        .slide h3 {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #FFFFFF;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            max-width: 900px;
+        }
+
+        .slide ul {
+            text-align: left;
+            max-width: 800px;
+        }
+
+        .slide li {
+            margin-bottom: 20px;
+            padding-left: 10px;
+        }
+
+        .highlight {
+            background: rgba(255, 153, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: 8px;
+            color: #FFB84D;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 153, 0, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1.1rem;
+            text-align: left;
+            max-width: 900px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 30px 0;
+        }
+
+        .comparison-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .comparison-item h4 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #FFB84D;
+        }
+
+        .demo-component {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 153, 0, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1000px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255, 153, 0, 0.8);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 153, 0, 1);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF9900, #FFB84D);
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 20px;
+            }
+
+            .slide h1 {
+                font-size: 2.5rem;
+            }
+
+            .slide h2 {
+                font-size: 2rem;
+            }
+
+            .slide p, .slide li {
+                font-size: 1.2rem;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-block {
+                font-size: 0.9rem;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="slide-counter" id="slideCounter">1 / 12</div>
+
+    <div class="presentation">
+        <!-- 第1張：標題頁 -->
+        <div class="slide active">
+            <h1>Web Components</h1>
+            <h2>現代化前端元件標準</h2>
+            <p>封裝性、可重用性、互操作性的革命性技術</p>
+            <div style="margin-top: 40px; font-size: 1.2rem; opacity: 0.8;">
+                2025年7月 • Vibe Coding 系列
+            </div>
+        </div>
+
+        <!-- 第2張：什麼是 Web Components -->
+        <div class="slide">
+            <h2>什麼是 Web Components？</h2>
+            <p style="margin-bottom: 40px;">Web Components 是一套瀏覽器原生 API，讓開發者能建立自定義、可重用的 HTML 元素</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🧩</span>
+                    <h4>自定義元素</h4>
+                    <p>建立專屬的 HTML 標籤</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🛡️</span>
+                    <h4>Shadow DOM</h4>
+                    <p>完全封裝的樣式與 DOM</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📋</span>
+                    <h4>HTML 模板</h4>
+                    <p>可重用的標記結構</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第3張：核心技術 -->
+        <div class="slide">
+            <h2>三大核心技術</h2>
+            <ul>
+                <li><span class="highlight">Custom Elements API</span><br>
+                    註冊自定義 HTML 元素，定義其行為和生命週期</li>
+                <li><span class="highlight">Shadow DOM API</span><br>
+                    建立封裝的 DOM 樹，避免樣式和腳本衝突</li>
+                <li><span class="highlight">HTML Templates</span><br>
+                    使用 &lt;template&gt; 和 &lt;slot&gt; 定義可重用的標記</li>
+            </ul>
+        </div>
+
+        <!-- 第4張：Custom Elements 程式碼範例 -->
+        <div class="slide">
+            <h2>Custom Elements 範例</h2>
+            <div class="code-block">
+                <pre>class MyButton extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+    }
+    
+    connectedCallback() {
+        this.shadowRoot.innerHTML = `
+            &lt;style&gt;
+                button { 
+                    background: #FF9900; 
+                    border: none; 
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    color: white;
+                }
+            &lt;/style&gt;
+            &lt;button&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/button&gt;
+        `;
+    }
+}
+
+customElements.define('my-button', MyButton);</pre>
+            </div>
+            <p>使用方式：<code style="color: #FFB84D;">&lt;my-button&gt;點擊我&lt;/my-button&gt;</code></p>
+        </div>
+
+        <!-- 第5張：Shadow DOM 封裝 -->
+        <div class="slide">
+            <h2>Shadow DOM 的威力</h2>
+            <div class="comparison">
+                <div class="comparison-item">
+                    <h4>❌ 傳統方式</h4>
+                    <ul style="text-align: left;">
+                        <li>全域 CSS 污染</li>
+                        <li>命名衝突</li>
+                        <li>樣式覆蓋問題</li>
+                        <li>難以維護</li>
+                    </ul>
+                </div>
+                <div class="comparison-item">
+                    <h4>✅ Shadow DOM</h4>
+                    <ul style="text-align: left;">
+                        <li>完全樣式封裝</li>
+                        <li>無命名衝突</li>
+                        <li>預期的樣式行為</li>
+                        <li>易於維護</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第6張：生命週期方法 -->
+        <div class="slide">
+            <h2>元素生命週期</h2>
+            <ul>
+                <li><span class="highlight">constructor()</span><br>
+                    元素建立時執行，設定初始狀態</li>
+                <li><span class="highlight">connectedCallback()</span><br>
+                    元素插入 DOM 時執行，通常用於渲染</li>
+                <li><span class="highlight">disconnectedCallback()</span><br>
+                    元素從 DOM 移除時執行，清理資源</li>
+                <li><span class="highlight">attributeChangedCallback()</span><br>
+                    屬性變更時執行，處理屬性更新</li>
+            </ul>
+        </div>
+
+        <!-- 第7張：屬性和事件處理 -->
+        <div class="slide">
+            <h2>屬性與事件處理</h2>
+            <div class="code-block">
+                <pre>class CounterButton extends HTMLElement {
+    static get observedAttributes() {
+        return ['count'];
+    }
+    
+    get count() {
+        return parseInt(this.getAttribute('count') || '0');
+    }
+    
+    set count(value) {
+        this.setAttribute('count', value);
+    }
+    
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'count') {
+            this.updateDisplay();
+        }
+    }
+    
+    handleClick() {
+        this.count++;
+        this.dispatchEvent(new CustomEvent('countchange', {
+            detail: { count: this.count }
+        }));
+    }
+}</pre>
+            </div>
+        </div>
+
+        <!-- 第8張：實際應用場景 -->
+        <div class="slide">
+            <h2>實際應用場景</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🎨</span>
+                    <h4>設計系統</h4>
+                    <p>統一的 UI 元件庫</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🔧</span>
+                    <h4>微前端</h4>
+                    <p>跨框架元件共享</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📦</span>
+                    <h4>第三方插件</h4>
+                    <p>獨立的功能模組</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🌐</span>
+                    <h4>跨平台開發</h4>
+                    <p>一次開發到處使用</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第9張：與框架比較 -->
+        <div class="slide">
+            <h2>Web Components vs 框架</h2>
+            <div class="comparison">
+                <div class="comparison-item">
+                    <h4>🚀 框架 (React/Vue/Angular)</h4>
+                    <ul style="text-align: left;">
+                        <li>豐富的生態系統</li>
+                        <li>開發工具完善</li>
+                        <li>學習資源豐富</li>
+                        <li>但有供應商鎖定</li>
+                    </ul>
+                </div>
+                <div class="comparison-item">
+                    <h4>🌐 Web Components</h4>
+                    <ul style="text-align: left;">
+                        <li>瀏覽器原生支援</li>
+                        <li>無框架依賴</li>
+                        <li>長期穩定性</li>
+                        <li>跨框架相容</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第10張：瀏覽器支援 -->
+        <div class="slide">
+            <h2>瀏覽器支援現況</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">✅</span>
+                    <h4>Custom Elements</h4>
+                    <p>所有現代瀏覽器</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">✅</span>
+                    <h4>Shadow DOM</h4>
+                    <p>Chrome, Firefox, Safari</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">✅</span>
+                    <h4>HTML Templates</h4>
+                    <p>廣泛支援</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📦</span>
+                    <h4>Polyfills</h4>
+                    <p>舊版瀏覽器支援</p>
+                </div>
+            </div>
+            <p style="margin-top: 30px; font-size: 1.2rem;">
+                <span class="highlight">Can I Use</span> 顯示超過 95% 的全球瀏覽器支援
+            </p>
+        </div>
+
+        <!-- 第11張：最佳實踐 -->
+        <div class="slide">
+            <h2>開發最佳實踐</h2>
+            <ul>
+                <li><span class="highlight">語意化命名</span><br>
+                    使用清楚的元件名稱，必須包含連字符</li>
+                <li><span class="highlight">屬性設計</span><br>
+                    支援屬性和特性的雙向綁定</li>
+                <li><span class="highlight">事件通訊</span><br>
+                    使用 CustomEvent 進行元件間通訊</li>
+                <li><span class="highlight">漸進式增強</span><br>
+                    確保在 JavaScript 失效時仍有基本功能</li>
+                <li><span class="highlight">無障礙設計</span><br>
+                    遵循 ARIA 標準，支援鍵盤操作</li>
+            </ul>
+        </div>
+
+        <!-- 第12張：結論與未來 -->
+        <div class="slide">
+            <h2>Web Components 的未來</h2>
+            <div class="demo-component">
+                <h3>🎯 為什麼選擇 Web Components？</h3>
+                <ul style="text-align: left; margin-top: 20px;">
+                    <li>✨ <strong>標準化</strong>：基於 Web 標準，長期穩定</li>
+                    <li>🔄 <strong>互操作性</strong>：可在任何框架中使用</li>
+                    <li>📦 <strong>封裝性</strong>：真正的元件封裝</li>
+                    <li>🚀 <strong>效能</strong>：瀏覽器原生最佳化</li>
+                    <li>🌱 <strong>未來導向</strong>：Web 平台的發展方向</li>
+                </ul>
+            </div>
+            <p style="margin-top: 30px; font-size: 1.3rem;">
+                <strong>Web Components 不是框架的競爭者，<br>而是所有 Web 開發的基石</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="previousSlide()">← 上一頁</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextSlide()">下一頁 →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('slideCounter').textContent = `${index + 1} / ${totalSlides}`;
+            document.getElementById('progressBar').style.width = `${(index + 1) / totalSlides * 100}%`;
+            
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        // 鍵盤導航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+
+        // 觸控手勢支援
+        let startX = 0;
+        let startY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            
+            const deltaX = startX - endX;
+            const deltaY = Math.abs(startY - endY);
+            
+            // 確保主要是水平滑動
+            if (Math.abs(deltaX) > 50 && deltaY < 100) {
+                if (deltaX > 0) {
+                    nextSlide();
+                } else {
+                    previousSlide();
+                }
+                e.preventDefault();
+            }
+        });
+
+        // 防止垂直滾動時的水平滑動
+        document.addEventListener('touchmove', (e) => {
+            const currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            
+            const horizontalMovement = Math.abs(startX - currentX);
+            const verticalMovement = Math.abs(startY - currentY);
+            
+            // 如果水平移動大於垂直移動，防止預設滾動
+            if (horizontalMovement > verticalMovement && horizontalMovement > 10) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // 初始化
+        showSlide(0);
+    </script>
+
+    <!-- 導覽元件 -->
+    <script src="../components/navigation.js"></script>
+    <navigation-component></navigation-component>
+</body>
+</html>
