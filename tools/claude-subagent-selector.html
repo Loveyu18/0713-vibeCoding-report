@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude subAgent 角色選擇器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            background: rgba(30, 41, 59, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #FF9900, #FFB84D, #FFCC80);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(255, 153, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.4rem;
+            color: #e2e8f0;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 20px 60px 20px 25px;
+            font-size: 1.2rem;
+            background: rgba(51, 65, 85, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 15px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: rgba(255, 153, 0, 0.6);
+            box-shadow: 0 0 30px rgba(255, 153, 0, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #FF9900;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .clear-btn.visible {
+            opacity: 1;
+        }
+
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            background: rgba(51, 65, 85, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 25px;
+            padding: 12px 25px;
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: rgba(255, 153, 0, 0.8);
+            border-color: rgba(255, 153, 0, 0.8);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .filter-tab:hover {
+            border-color: rgba(255, 153, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .agent-card {
+            background: rgba(30, 41, 59, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 153, 0, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .agent-card:hover::before {
+            left: 100%;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 153, 0, 0.4);
+            box-shadow: 0 25px 50px rgba(255, 153, 0, 0.15);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .agent-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .agent-title {
+            flex: 1;
+        }
+
+        .agent-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #FFB84D;
+            margin-bottom: 5px;
+        }
+
+        .agent-type {
+            font-size: 1rem;
+            color: #60a5fa;
+            font-weight: 500;
+        }
+
+        .agent-description {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .agent-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            background: rgba(96, 165, 250, 0.2);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            border-radius: 12px;
+            padding: 4px 12px;
+            font-size: 0.9rem;
+            color: #93c5fd;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #FF9900, #FFB84D);
+            color: #fff;
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: rgba(51, 65, 85, 0.8);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            color: #60a5fa;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 25px rgba(255, 153, 0, 0.4);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFB84D;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #e2e8f0;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FF9900;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 153, 0, 0.8);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            color: #fff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 153, 0, 1);
+            transform: scale(1.05);
+        }
+
+        .copy-btn.copied {
+            background: #22c55e;
+        }
+
+        .section {
+            margin: 30px 0;
+        }
+
+        .section h3 {
+            font-size: 1.4rem;
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .agents-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .agent-card {
+                padding: 25px;
+            }
+
+            .modal-content {
+                padding: 25px;
+                margin: 10px;
+            }
+
+            .filter-tabs {
+                gap: 10px;
+            }
+
+            .filter-tab {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Claude subAgent 角色選擇器</h1>
+            <p>選擇合適的 AI 助手角色，一鍵複製配置檔案</p>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="搜尋角色名稱、功能或標籤...">
+            <button class="clear-btn" id="clearBtn">✕</button>
+        </div>
+
+        <div class="filter-tabs">
+            <div class="filter-tab active" data-category="all">全部</div>
+            <div class="filter-tab" data-category="development">開發</div>
+            <div class="filter-tab" data-category="review">審查</div>
+            <div class="filter-tab" data-category="design">設計</div>
+            <div class="filter-tab" data-category="optimization">優化</div>
+            <div class="filter-tab" data-category="documentation">文檔</div>
+        </div>
+
+        <div class="agents-grid" id="agentsGrid">
+            <!-- Agent cards will be populated by JavaScript -->
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <p>找不到符合條件的角色</p>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div id="modalBody">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">已複製到剪貼簿！</div>
+
+    <script>
+        const agents = [
+            {
+                name: "通用助手",
+                type: "general-purpose",
+                icon: "🤖",
+                description: "全能型 AI 助手，適合處理各種開發任務和複雜問題解決。具備廣泛的知識基礎和靈活的適應能力。",
+                category: "development",
+                tags: ["通用", "靈活", "多功能"],
+                config: `---
+name: general-purpose
+description: 通用型 AI 助手，適合處理各種開發任務
+tools: ["*"]
+---
+
+你是一個通用型 AI 開發助手，具備以下特點：
+
+## 核心能力
+- 程式碼撰寫與除錯
+- 技術問題解決
+- 架構設計建議
+- 文檔撰寫
+- 測試案例設計
+
+## 工作原則
+- 提供清晰、準確的技術建議
+- 遵循最佳實踐和業界標準
+- 注重程式碼品質和可維護性
+- 主動提供改進建議
+
+請協助用戶完成各種開發相關任務。`,
+                scenarios: [
+                    "複雜問題分析和解決",
+                    "跨領域技術整合",
+                    "初期開發和原型設計",
+                    "學習新技術和框架"
+                ]
+            },
+            {
+                name: "程式碼審查師",
+                type: "code-reviewer",
+                icon: "🔍",
+                description: "專精於程式碼品質分析、安全漏洞檢測和最佳實踐建議。確保程式碼符合團隊標準。",
+                category: "review",
+                tags: ["程式碼品質", "安全", "最佳實踐"],
+                config: `---
+name: code-reviewer
+description: 專業程式碼審查和品質控制助手
+tools: ["Read", "Grep", "Glob"]
+---
+
+你是一位經驗豐富的程式碼審查師，專注於：
+
+## 審查重點
+- 程式碼品質和可讀性
+- 安全漏洞識別
+- 效能問題檢測
+- 最佳實踐遵循
+- 架構和設計模式
+
+## 審查標準
+- SOLID 原則應用
+- 程式碼重複性 (DRY)
+- 測試覆蓋率
+- 錯誤處理機制
+- 文檔完整性
+
+## 回饋方式
+- 具體的改進建議
+- 程式碼範例提供
+- 優先級分類（高/中/低）
+- 學習資源推薦
+
+請提供建設性的程式碼審查意見。`,
+                scenarios: [
+                    "Pull Request 審查",
+                    "程式碼品質檢測",
+                    "安全漏洞掃描",
+                    "重構前評估"
+                ]
+            },
+            {
+                name: "API 設計師",
+                type: "api-designer",
+                icon: "🔌",
+                description: "專門設計 RESTful API、GraphQL 和微服務架構。注重 API 的一致性、可用性和擴展性。",
+                category: "design",
+                tags: ["API設計", "RESTful", "微服務"],
+                config: `---
+name: api-designer
+description: 專業 API 設計和架構規劃助手
+tools: ["Read", "Write", "Glob"]
+---
+
+你是一位 API 設計專家，擅長：
+
+## 設計原則
+- RESTful API 最佳實踐
+- GraphQL 查詢優化
+- 微服務架構設計
+- API 版本管理
+- 安全性設計
+
+## 設計考量
+- 一致性和可預測性
+- 錯誤處理和狀態碼
+- 分頁和過濾機制
+- 快取策略
+- 文檔自動生成
+
+## 輸出格式
+- OpenAPI/Swagger 規格
+- GraphQL schema 定義
+- API 文檔範例
+- 測試案例建議
+
+請協助設計高品質、易維護的 API。`,
+                scenarios: [
+                    "新 API 系統設計",
+                    "現有 API 重構",
+                    "微服務通訊設計",
+                    "API 文檔生成"
+                ]
+            },
+            {
+                name: "效能優化專家",
+                type: "performance-optimizer",
+                icon: "⚡",
+                description: "專注於應用程式效能分析、瓶頸識別和優化策略。提供具體的效能改進建議。",
+                category: "optimization",
+                tags: ["效能優化", "瓶頸分析", "快取"],
+                config: `---
+name: performance-optimizer
+description: 專業效能分析和優化助手
+tools: ["Read", "Bash", "Grep"]
+---
+
+你是一位效能優化專家，專精於：
+
+## 優化領域
+- 應用程式效能分析
+- 資料庫查詢優化
+- 快取策略設計
+- 記憶體使用優化
+- 網路傳輸優化
+
+## 分析方法
+- 效能瓶頸識別
+- 監控指標設計
+- 負載測試規劃
+- 程式碼剖析分析
+- 系統資源監控
+
+## 優化策略
+- 演算法複雜度改進
+- 資料結構選擇
+- 並行處理設計
+- 懶加載實現
+- CDN 和快取配置
+
+請提供具體的效能優化建議和實施計劃。`,
+                scenarios: [
+                    "應用程式效能調優",
+                    "資料庫查詢優化",
+                    "前端載入速度改進",
+                    "伺服器資源優化"
+                ]
+            },
+            {
+                name: "安全審計師",
+                type: "security-auditor",
+                icon: "🛡️",
+                description: "專門進行安全漏洞檢測、威脅分析和安全建議。確保應用程式符合安全標準。",
+                category: "review",
+                tags: ["資訊安全", "漏洞檢測", "威脅分析"],
+                config: `---
+name: security-auditor
+description: 專業資訊安全審計和漏洞檢測助手
+tools: ["Read", "Grep", "Glob"]
+---
+
+你是一位資訊安全專家，專注於：
+
+## 安全領域
+- 應用程式安全審計
+- 漏洞掃描和評估
+- 安全程式碼審查
+- 威脅建模分析
+- 合規性檢查
+
+## 檢查項目
+- OWASP Top 10 漏洞
+- 身份驗證和授權
+- 資料加密和保護
+- 輸入驗證和清理
+- 會話管理安全
+
+## 安全建議
+- 具體修復方案
+- 安全最佳實踐
+- 防護機制設計
+- 監控和警報設定
+- 安全測試策略
+
+請提供全面的安全評估和改進建議。`,
+                scenarios: [
+                    "安全漏洞掃描",
+                    "程式碼安全審查",
+                    "威脅風險評估",
+                    "合規性檢查"
+                ]
+            },
+            {
+                name: "文檔撰寫師",
+                type: "documentation-writer",
+                icon: "📝",
+                description: "專門撰寫技術文檔、API 文檔和使用手冊。確保文檔清晰、完整且易於理解。",
+                category: "documentation",
+                tags: ["技術文檔", "API文檔", "使用手冊"],
+                config: `---
+name: documentation-writer
+description: 專業技術文檔撰寫和維護助手
+tools: ["Read", "Write", "Glob"]
+---
+
+你是一位技術文檔專家，擅長：
+
+## 文檔類型
+- API 參考文檔
+- 使用者手冊
+- 開發者指南
+- 架構設計文檔
+- 操作維護手冊
+
+## 撰寫原則
+- 清晰易懂的表達
+- 結構化內容組織
+- 實用的程式碼範例
+- 完整的使用流程
+- 視覺化圖表輔助
+
+## 文檔標準
+- Markdown 格式規範
+- 一致的命名慣例
+- 版本管理策略
+- 多語言支援考量
+- 搜尋和導航優化
+
+請協助創建高品質的技術文檔。`,
+                scenarios: [
+                    "API 文檔自動生成",
+                    "使用者手冊撰寫",
+                    "技術規格文檔",
+                    "開發者指南製作"
+                ]
+            },
+            {
+                name: "測試生成器",
+                type: "test-generator",
+                icon: "🧪",
+                description: "自動生成各種測試案例，包括單元測試、整合測試和端對端測試。提升程式碼品質。",
+                category: "development",
+                tags: ["單元測試", "整合測試", "TDD"],
+                config: `---
+name: test-generator
+description: 專業測試案例生成和測試策略助手
+tools: ["Read", "Write", "Bash"]
+---
+
+你是一位測試工程專家，專精於：
+
+## 測試類型
+- 單元測試 (Unit Tests)
+- 整合測試 (Integration Tests)
+- 端對端測試 (E2E Tests)
+- 效能測試 (Performance Tests)
+- 安全測試 (Security Tests)
+
+## 測試策略
+- 測試驅動開發 (TDD)
+- 行為驅動開發 (BDD)
+- 測試金字塔設計
+- 測試覆蓋率優化
+- 持續整合測試
+
+## 生成內容
+- 完整測試案例程式碼
+- 測試資料和模擬物件
+- 斷言和驗證邏輯
+- 測試報告分析
+- 自動化測試腳本
+
+請協助建立完善的測試體系。`,
+                scenarios: [
+                    "自動化測試建立",
+                    "測試覆蓋率提升",
+                    "回歸測試設計",
+                    "效能測試規劃"
+                ]
+            },
+            {
+                name: "架構規劃師",
+                type: "architecture-planner",
+                icon: "🏗️",
+                description: "負責系統架構設計、技術選型和擴展性規劃。提供企業級解決方案建議。",
+                category: "design",
+                tags: ["系統架構", "技術選型", "擴展性"],
+                config: `---
+name: architecture-planner
+description: 專業系統架構設計和技術規劃助手
+tools: ["Read", "Write", "WebFetch"]
+---
+
+你是一位系統架構師，專長於：
+
+## 架構設計
+- 微服務架構設計
+- 分散式系統架構
+- 雲端原生架構
+- 事件驅動架構
+- 領域驅動設計 (DDD)
+
+## 技術選型
+- 框架和工具評估
+- 資料庫選擇策略
+- 快取和訊息佇列
+- 監控和日誌系統
+- 部署和維運工具
+
+## 規劃考量
+- 可擴展性設計
+- 高可用性保證
+- 災難恢復規劃
+- 成本效益分析
+- 團隊技術能力
+
+請提供全面的架構設計和技術建議。`,
+                scenarios: [
+                    "新系統架構設計",
+                    "現有系統重構",
+                    "技術堆疊選擇",
+                    "擴展性規劃"
+                ]
+            },
+            {
+                name: "除錯專家",
+                type: "debugging-specialist",
+                icon: "🐛",
+                description: "專門診斷和解決各種程式錯誤、異常和系統問題。提供系統化的除錯方法。",
+                category: "development",
+                tags: ["除錯", "問題診斷", "錯誤分析"],
+                config: `---
+name: debugging-specialist
+description: 專業程式除錯和問題診斷助手
+tools: ["Read", "Bash", "Grep", "LS"]
+---
+
+你是一位除錯專家，擅長：
+
+## 除錯領域
+- 程式邏輯錯誤分析
+- 記憶體洩漏檢測
+- 執行緒和同步問題
+- 網路連線問題
+- 效能瓶頸診斷
+
+## 診斷方法
+- 系統化問題分析
+- 日誌檔案解析
+- 除錯工具使用
+- 問題重現步驟
+- 根本原因分析
+
+## 解決策略
+- 分層除錯方法
+- 二分法問題定位
+- 測試案例驗證
+- 監控點設置
+- 防禦性程式設計
+
+請協助快速定位和解決程式問題。`,
+                scenarios: [
+                    "生產環境問題排查",
+                    "複雜錯誤診斷",
+                    "效能問題分析",
+                    "間歇性錯誤追蹤"
+                ]
+            },
+            {
+                name: "資料庫專家",
+                type: "database-expert",
+                icon: "🗄️",
+                description: "專精於資料庫設計、查詢優化和資料建模。支援各種資料庫系統和最佳實踐。",
+                category: "optimization",
+                tags: ["資料庫設計", "SQL優化", "資料建模"],
+                config: `---
+name: database-expert
+description: 專業資料庫設計和優化助手
+tools: ["Read", "Write", "Bash"]
+---
+
+你是一位資料庫專家，專精於：
+
+## 資料庫技術
+- 關聯式資料庫 (SQL)
+- NoSQL 資料庫
+- 時間序列資料庫
+- 圖形資料庫
+- 記憶體資料庫
+
+## 設計原則
+- 正規化和反正規化
+- 索引策略設計
+- 資料分割和分片
+- 備份和復原策略
+- 資料安全和權限
+
+## 優化技術
+- 查詢效能調校
+- 索引優化建議
+- 資料庫架構設計
+- 複製和高可用
+- 監控和維護
+
+請協助設計高效能的資料庫解決方案。`,
+                scenarios: [
+                    "資料庫架構設計",
+                    "查詢效能優化",
+                    "資料遷移規劃",
+                    "資料備份策略"
+                ]
+            }
+        ];
+
+        let filteredAgents = [...agents];
+        let currentFilter = 'all';
+
+        function renderAgents() {
+            const grid = document.getElementById('agentsGrid');
+            const noResults = document.getElementById('noResults');
+            
+            if (filteredAgents.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            noResults.style.display = 'none';
+
+            grid.innerHTML = filteredAgents.map(agent => `
+                <div class="agent-card" onclick="showModal('${agent.type}')">
+                    <div class="agent-header">
+                        <div class="agent-icon">${agent.icon}</div>
+                        <div class="agent-title">
+                            <div class="agent-name">${agent.name}</div>
+                            <div class="agent-type">${agent.type}</div>
+                        </div>
+                    </div>
+                    <div class="agent-description">${agent.description}</div>
+                    <div class="agent-tags">
+                        ${agent.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="agent-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); copyConfig('${agent.type}')">
+                            複製配置
+                        </button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); showModal('${agent.type}')">
+                            查看詳情
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterAgents(category) {
+            currentFilter = category;
+            if (category === 'all') {
+                filteredAgents = [...agents];
+            } else {
+                filteredAgents = agents.filter(agent => agent.category === category);
+            }
+            
+            // Apply search filter if there's a search term
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filteredAgents = filteredAgents.filter(agent => 
+                    agent.name.toLowerCase().includes(searchTerm) ||
+                    agent.description.toLowerCase().includes(searchTerm) ||
+                    agent.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            renderAgents();
+        }
+
+        function searchAgents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const clearBtn = document.getElementById('clearBtn');
+            
+            if (searchTerm) {
+                clearBtn.classList.add('visible');
+                if (currentFilter === 'all') {
+                    filteredAgents = agents.filter(agent => 
+                        agent.name.toLowerCase().includes(searchTerm) ||
+                        agent.description.toLowerCase().includes(searchTerm) ||
+                        agent.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                    );
+                } else {
+                    filteredAgents = agents.filter(agent => 
+                        agent.category === currentFilter &&
+                        (agent.name.toLowerCase().includes(searchTerm) ||
+                         agent.description.toLowerCase().includes(searchTerm) ||
+                         agent.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
+                    );
+                }
+            } else {
+                clearBtn.classList.remove('visible');
+                filterAgents(currentFilter);
+                return;
+            }
+            
+            renderAgents();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearBtn').classList.remove('visible');
+            filterAgents(currentFilter);
+        }
+
+        function showModal(agentType) {
+            const agent = agents.find(a => a.type === agentType);
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            modalTitle.textContent = `${agent.icon} ${agent.name}`;
+            modalBody.innerHTML = `
+                <div class="section">
+                    <h3>角色描述</h3>
+                    <p>${agent.description}</p>
+                </div>
+                
+                <div class="section">
+                    <h3>適用場景</h3>
+                    <ul>
+                        ${agent.scenarios.map(scenario => `<li>${scenario}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h3>配置檔案</h3>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this, \`${agent.config.replace(/`/g, '\\`')}\`)">複製</button>${agent.config}
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>使用方式</h3>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this, '# 1. 創建配置檔案\\nmkdir -p .claude/agents\\necho \"${agent.config.replace(/\n/g, '\\n').replace(/"/g, '\\"')}\" > .claude/agents/${agent.type}.md\\n\\n# 2. 使用 subAgent\\n@${agent.type} 請協助我...')">複製</button># 1. 創建配置檔案
+mkdir -p .claude/agents
+echo "${agent.config.replace(/\n/g, '\\n').replace(/"/g, '\\"')}" > .claude/agents/${agent.type}.md
+
+# 2. 使用 subAgent
+@${agent.type} 請協助我...
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function copyConfig(agentType) {
+            const agent = agents.find(a => a.type === agentType);
+            copyToClipboard(null, agent.config);
+        }
+
+        function copyToClipboard(button, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                if (button) {
+                    const originalText = button.textContent;
+                    button.textContent = '已複製';
+                    button.classList.add('copied');
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.classList.remove('copied');
+                    }, 2000);
+                }
+                
+                showToast();
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', searchAgents);
+        document.getElementById('clearBtn').addEventListener('click', clearSearch);
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                filterAgents(e.target.dataset.category);
+            });
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            if (e.key === '/' && !document.querySelector('.modal.active')) {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+
+        // Initialize
+        renderAgents();
+    </script>
+</body>
+</html>
