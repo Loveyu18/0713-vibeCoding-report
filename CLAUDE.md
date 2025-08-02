@@ -34,7 +34,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 -   文檔：Markdown 搭配 EARS 格式需求規範
 -   版本控制：Git
 
-## 常用指令
+## 設計規範
+
+- 遵循 apple 公司發布的設計語言 liauid glass 
+- 以淺色設計為主
+- 符合 RWD 彈性瀏覽
+- 符合 臺灣網站無障礙 AA 級別規範
 
 ### 查看內容
 

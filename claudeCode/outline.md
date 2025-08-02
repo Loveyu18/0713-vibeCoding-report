@@ -101,6 +101,9 @@ claude "/export 淨灘網站開發記錄"    # 匯出專案文件
 - **部署：** Docker + Vercel/Netlify
 - **API：** Google Maps API、郵件通知服務
 
+### 近一步研究
+- awesome-claude-code
+
 ---
 
 **演示重點：**

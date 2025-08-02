@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code 實戰操作簡報</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(120, 180, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 120, 180, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(180, 255, 120, 0.25) 0%, transparent 50%),
+                linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            color: #1e293b;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px 40px;
+            text-align: center;
+            height: 100vh;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.25) 0%,
+                    rgba(255, 255, 255, 0.10) 50%,
+                    rgba(255, 255, 255, 0.05) 100%
+                );
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0;
+            overflow-y: auto;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .slide h2 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 32px;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .slide h3 {
+            font-size: clamp(1.25rem, 3vw, 2rem);
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 16px;
+            letter-spacing: -0.005em;
+        }
+
+        .slide p {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 24px;
+            max-width: 800px;
+            font-weight: 400;
+        }
+
+        .code-block {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(15, 23, 42, 0.95) 0%,
+                    rgba(30, 41, 59, 0.95) 100%
+                );
+            color: #e2e8f0;
+            padding: 24px 28px;
+            border-radius: 16px;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            margin: 24px 0;
+            text-align: left;
+            white-space: pre-line;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin: 40px 0;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .feature-card {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.4) 0%,
+                    rgba(255, 255, 255, 0.2) 50%,
+                    rgba(255, 255, 255, 0.1) 100%
+                );
+            backdrop-filter: blur(30px) saturate(160%);
+            -webkit-backdrop-filter: blur(30px) saturate(160%);
+            padding: 32px 28px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.08),
+                0 1px 0 rgba(255, 255, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 16px 48px rgba(0, 0, 0, 0.12),
+                0 2px 0 rgba(255, 255, 255, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .highlight {
+            background: 
+                linear-gradient(135deg, 
+                    #FF9900 0%,
+                    #FFB84D 50%,
+                    #FF9900 100%
+                );
+            color: white;
+            padding: 8px 20px;
+            border-radius: 28px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 12px 0;
+            box-shadow: 
+                0 4px 16px rgba(255, 153, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .tech-item {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(59, 130, 246, 0.15) 0%,
+                    rgba(147, 197, 253, 0.1) 100%
+                );
+            color: #1e40af;
+            padding: 12px 24px;
+            border-radius: 32px;
+            font-weight: 500;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 
+                0 2px 8px rgba(59, 130, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .emoji {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 24px;
+            display: block;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: #64748b;
+            margin-bottom: 40px;
+            font-weight: 400;
+            letter-spacing: -0.005em;
+        }
+
+        /* 導航控制 */
+        .nav-container {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.25) 0%,
+                    rgba(255, 255, 255, 0.1) 100%
+                );
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            padding: 16px 28px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(100, 116, 139, 0.6);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-dot.active {
+            background: 
+                linear-gradient(135deg, #FF9900 0%, #FFB84D 100%);
+            transform: scale(1.4);
+            box-shadow: 
+                0 4px 12px rgba(255, 153, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #475569;
+            cursor: pointer;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.4) 0%,
+                    rgba(255, 255, 255, 0.2) 100%
+                );
+            backdrop-filter: blur(30px) saturate(160%);
+            -webkit-backdrop-filter: blur(30px) saturate(160%);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .arrow:hover {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.6) 0%,
+                    rgba(255, 255, 255, 0.3) 100%
+                );
+            color: #FF9900;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .arrow.left {
+            left: 30px;
+        }
+
+        .arrow.right {
+            right: 30px;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.25) 0%,
+                    rgba(255, 255, 255, 0.1) 100%
+                );
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            color: #334155;
+            padding: 12px 24px;
+            border-radius: 28px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        ul {
+            text-align: left;
+            max-width: 700px;
+            margin: 0 auto;
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            margin: 12px 0;
+            padding: 16px 20px;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.3) 0%,
+                    rgba(255, 255, 255, 0.1) 100%
+                );
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 20px;
+            }
+            
+            .slide h1 {
+                font-size: 2rem;
+            }
+            
+            .slide h2 {
+                font-size: 1.8rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .arrow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <!-- 第1頁：標題頁 -->
+        <div class="slide active">
+            <span class="emoji">🌊</span>
+            <h1>Claude Code 實戰操作</h1>
+            <p class="subtitle">AI 驅動的淨灘資訊網站完整開發流程</p>
+            <div class="tech-stack">
+                <span class="tech-item">React + TypeScript</span>
+                <span class="tech-item">Tailwind CSS</span>
+                <span class="tech-item">Leaflet.js</span>
+                <span class="tech-item">Node.js + Express</span>
+                <span class="tech-item">MongoDB</span>
+            </div>
+            <p>從需求分析到上線部署的完整流程示範</p>
+        </div>
+
+        <!-- 第2頁：快速上手 -->
+        <div class="slide">
+            <span class="emoji">⚡</span>
+            <h2>一分鐘快速上手</h2>
+            <div class="code-block"># 快速安裝
+npm install -g @anthropic-ai/claude-code
+
+# 立即開始
+claude "規劃一個淨灘資訊網站專案"</div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="emoji">🚀</span>
+                    <h3>零配置啟動</h3>
+                    <p>無需複雜設定，安裝即用</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">🧠</span>
+                    <h3>AI 驅動</h3>
+                    <p>智能理解需求，自動生成代碼</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第3頁：魔法符號系統 -->
+        <div class="slide">
+            <span class="emoji">✨</span>
+            <h2>魔法符號系統</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="highlight">!</div>
+                    <h3>Bash 模式</h3>
+                    <p>執行系統指令</p>
+                    <div class="code-block">claude "! ls -la"</div>
+                </div>
+                <div class="feature-card">
+                    <div class="highlight">/</div>
+                    <h3>指令模式</h3>
+                    <p>Claude 內建指令</p>
+                    <div class="code-block">claude "/export"
+claude "/resume"</div>
+                </div>
+                <div class="feature-card">
+                    <div class="highlight">@</div>
+                    <h3>檔案路徑</h3>
+                    <p>快速引用檔案</p>
+                    <div class="code-block">claude "@ README.md 分析檔案"</div>
+                </div>
+                <div class="feature-card">
+                    <div class="highlight">\</div>
+                    <h3>換行符號</h3>
+                    <p>多行輸入</p>
+                    <div class="code-block">claude "第一行 \ 
+第二行內容"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第4頁：核心功能實戰 -->
+        <div class="slide">
+            <span class="emoji">🎯</span>
+            <h2>核心功能實戰</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="emoji">📋</span>
+                    <h3>計劃模式</h3>
+                    <p><span class="highlight">Shift + Tab</span> 進入計劃模式</p>
+                    <p>複雜任務規劃、架構設計</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">📁</span>
+                    <h3>檔案操作</h3>
+                    <div class="code-block">claude "建立淨灘活動列表頁面的 React 元件"</div>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">🗺️</span>
+                    <h3>地圖整合</h3>
+                    <div class="code-block">claude "實作互動式地圖顯示淨灘地點"</div>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">📝</span>
+                    <h3>志工報名</h3>
+                    <div class="code-block">claude "設計志工報名表單與驗證"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第5頁：影像與文檔處理 -->
+        <div class="slide">
+            <span class="emoji">🖼️</span>
+            <h2>影像與文檔處理</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="emoji">🎨</span>
+                    <h3>設計稿解析</h3>
+                    <p>上傳環保主題設計圖</p>
+                    <p>自動生成對應 UI 元件</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">📊</span>
+                    <h3>OCR 功能</h3>
+                    <p>識別海洋資料表格</p>
+                    <p>自動轉換為結構化數據</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">📐</span>
+                    <h3>UI 設計規範</h3>
+                    <p>生成淨灘網站設計系統</p>
+                    <p>一致性色彩與組件規範</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第6頁：進階技巧 -->
+        <div class="slide">
+            <span class="emoji">🔧</span>
+            <h2>進階技巧與整合</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="emoji">💻</span>
+                    <h3>VSCode 整合</h3>
+                    <ul>
+                        <li>安裝 Claude Code 擴充功能</li>
+                        <li>直接在編輯器中使用 Claude</li>
+                        <li>無縫工作流程整合</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">🛠️</span>
+                    <h3>實用工具</h3>
+                    <ul>
+                        <li><strong>ccusage：</strong> Token 使用量追蹤</li>
+                        <li><strong>awesome-claude-code：</strong> 進階技巧資源庫</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第7頁：完整開發流程 -->
+        <div class="slide">
+            <span class="emoji">🌊</span>
+            <h2>淨灘網站開發流程</h2>
+            <div class="code-block"># 設定專案記憶
+claude "# 記住我的專案使用 React + TypeScript + Leaflet.js"
+
+# 分析依賴
+claude "@ package.json 分析地圖 API 相關依賴"
+
+# 執行測試
+claude "! npm test"
+
+# 匯出專案文件
+claude "/export 淨灘網站開發記錄"</div>
+            <div class="tech-stack">
+                <span class="tech-item">前端：React + TypeScript + Tailwind CSS + Leaflet.js</span>
+                <span class="tech-item">後端：Node.js + Express + MongoDB</span>
+                <span class="tech-item">部署：Docker + Vercel/Netlify</span>
+                <span class="tech-item">API：Google Maps API、郵件通知服務</span>
+            </div>
+        </div>
+
+        <!-- 第8頁：結語 -->
+        <div class="slide">
+            <span class="emoji">🎉</span>
+            <h1>開始您的 AI 開發之旅</h1>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="emoji">🌱</span>
+                    <h3>環保價值</h3>
+                    <p>AI 輔助開發解決環保議題</p>
+                    <p>技術與社會責任的完美結合</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">🚀</span>
+                    <h3>高效開發</h3>
+                    <p>從 SA 到前後端交付</p>
+                    <p>完整的開發生命週期支援</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">📊</span>
+                    <h3>數據視覺化</h3>
+                    <p>地圖整合與資料視覺化</p>
+                    <p>豐富的互動式用戶體驗</p>
+                </div>
+            </div>
+            <p style="margin-top: 30px; font-size: 1.4rem; font-weight: 600;">
+                讓 Claude Code 成為您的 AI 開發夥伴 ✨
+            </p>
+        </div>
+    </div>
+
+    <!-- 導航控制 -->
+    <div class="nav-container" id="navContainer"></div>
+    <div class="slide-counter" id="slideCounter">1 / 8</div>
+    <div class="arrow left" onclick="changeSlide(-1)">‹</div>
+    <div class="arrow right" onclick="changeSlide(1)">›</div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // 初始化導航點
+        function initNavigation() {
+            const navContainer = document.getElementById('navContainer');
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'nav-dot';
+                dot.onclick = () => goToSlide(i);
+                navContainer.appendChild(dot);
+            }
+            updateNavigation();
+        }
+
+        // 更新導航點
+        function updateNavigation() {
+            const dots = document.querySelectorAll('.nav-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // 顯示指定幻燈片
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            updateCounter();
+            updateNavigation();
+        }
+
+        // 切換幻燈片
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // 跳轉到指定幻燈片
+        function goToSlide(n) {
+            showSlide(n);
+        }
+
+        // 更新計數器
+        function updateCounter() {
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        // 鍵盤控制
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    changeSlide(1);
+                    break;
+                case 'ArrowLeft':
+                    changeSlide(-1);
+                    break;
+                case 'Home':
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    goToSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // 觸控支援
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    changeSlide(1); // 向左滑動，下一張
+                } else {
+                    changeSlide(-1); // 向右滑動，上一張
+                }
+            }
+        }
+
+        // 初始化
+        initNavigation();
+        updateCounter();
+    </script>
+</body>
+</html>
