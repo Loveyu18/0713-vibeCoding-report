@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +21,7 @@
         }
 
 
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -186,8 +187,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
         }
 
         .agent-title {
@@ -435,6 +443,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -1323,7 +1332,7 @@ tools: Read, Write, MultiEdit, Grep, Glob, TodoWrite
         function renderAgents() {
             const grid = document.getElementById('agentsGrid');
             const noResults = document.getElementById('noResults');
-            
+
             if (filteredAgents.length === 0) {
                 grid.style.display = 'none';
                 noResults.style.display = 'block';
@@ -1365,38 +1374,38 @@ tools: Read, Write, MultiEdit, Grep, Glob, TodoWrite
             } else {
                 filteredAgents = agents.filter(agent => agent.category === category);
             }
-            
+
             // Apply search filter if there's a search term
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             if (searchTerm) {
-                filteredAgents = filteredAgents.filter(agent => 
+                filteredAgents = filteredAgents.filter(agent =>
                     agent.name.toLowerCase().includes(searchTerm) ||
                     agent.description.toLowerCase().includes(searchTerm) ||
                     agent.tags.some(tag => tag.toLowerCase().includes(searchTerm))
                 );
             }
-            
+
             renderAgents();
         }
 
         function searchAgents() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const clearBtn = document.getElementById('clearBtn');
-            
+
             if (searchTerm) {
                 clearBtn.classList.add('visible');
                 if (currentFilter === 'all') {
-                    filteredAgents = agents.filter(agent => 
+                    filteredAgents = agents.filter(agent =>
                         agent.name.toLowerCase().includes(searchTerm) ||
                         agent.description.toLowerCase().includes(searchTerm) ||
                         agent.tags.some(tag => tag.toLowerCase().includes(searchTerm))
                     );
                 } else {
-                    filteredAgents = agents.filter(agent => 
+                    filteredAgents = agents.filter(agent =>
                         agent.category === currentFilter &&
                         (agent.name.toLowerCase().includes(searchTerm) ||
-                         agent.description.toLowerCase().includes(searchTerm) ||
-                         agent.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
+                            agent.description.toLowerCase().includes(searchTerm) ||
+                            agent.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
                     );
                 }
             } else {
@@ -1404,7 +1413,7 @@ tools: Read, Write, MultiEdit, Grep, Glob, TodoWrite
                 filterAgents(currentFilter);
                 return;
             }
-            
+
             renderAgents();
         }
 
@@ -1480,7 +1489,7 @@ echo "${agent.config.replace(/\n/g, '\\n').replace(/"/g, '\\"')}" > .claude/agen
                         button.classList.remove('copied');
                     }, 2000);
                 }
-                
+
                 showToast();
             });
         }
@@ -1527,4 +1536,5 @@ echo "${agent.config.replace(/\n/g, '\\n').replace(/"/g, '\\"')}" > .claude/agen
         renderAgents();
     </script>
 </body>
+
 </html>
