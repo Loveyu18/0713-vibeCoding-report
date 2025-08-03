@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../components/claude-loader.css"> <!-- 引入 JavaScript 控制器 -->
+
+
     <title>淨灘資訊平台 - 守護海洋從淨灘開始</title>
     <style>
         /* Liquid Glass 設計系統 */
@@ -396,6 +400,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -407,6 +412,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- 導航列 -->
     <nav class="navbar glass" role="navigation" aria-label="主要導航">
@@ -531,9 +537,11 @@
         </section>
     </main>
 
+
+
     <script>
         // 簡單的互動效果
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 導航連結平滑滾動
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
@@ -549,11 +557,11 @@
 
             // 卡片hover效果增強
             document.querySelectorAll('.card, .event-card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
+                card.addEventListener('mouseenter', function () {
                     this.style.transform = 'translateY(-8px)';
                 });
-                
-                card.addEventListener('mouseleave', function() {
+
+                card.addEventListener('mouseleave', function () {
                     this.style.transform = 'translateY(0)';
                 });
             });
@@ -577,5 +585,10 @@
             });
         });
     </script>
+    <script src="../components/claude-loader.js"></script>
+    <script>
+        const loader = showClaudeLoader({ theme: 'default', duration: 3000 }); // 手動完成 loader.finish();
+    </script>
 </body>
+
 </html>

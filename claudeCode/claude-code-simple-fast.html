@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code 完整開發指南 - 簡化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .workflow-navigator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 15px;
+            padding: 15px 25px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 90vw;
+        }
+
+        .workflow-step {
+            padding: 8px 16px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .workflow-step:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .workflow-step.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .workflow-step.completed {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 120px auto 50px;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+
+        .slide h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .slide h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #475569;
+            margin: 25px 0 15px;
+        }
+
+        .slide h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #64748b;
+            margin: 20px 0 10px;
+        }
+
+        .slide p {
+            margin-bottom: 15px;
+            color: #475569;
+        }
+
+        .slide ul,
+        .slide ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .slide li {
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        .columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .column {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .agent-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .agent-card h4 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .rating {
+            color: #f59e0b;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9rem;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: white;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button:hover {
+            background: #f1f5f9;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            color: #475569;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .workflow-navigator {
+                padding: 10px 15px;
+                gap: 5px;
+            }
+
+            .workflow-step {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                min-width: 80px;
+            }
+
+            .container {
+                margin-top: 140px;
+                padding: 10px;
+            }
+
+            .slide {
+                padding: 25px;
+            }
+
+            .slide h1 {
+                font-size: 2rem;
+            }
+
+            .columns {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navigation {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .slide-counter {
+                bottom: 20px;
+                left: 20px;
+            }
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .table tr:hover {
+            background: #f8fafc;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 六大開發流程導航 -->
+    <div class="workflow-navigator" id="workflowNavigator">
+        <div class="workflow-step active" data-stage="1">1. 需求溝通</div>
+        <div class="workflow-step" data-stage="2">2. 視覺設計</div>
+        <div class="workflow-step" data-stage="3">3. 版面確認</div>
+        <div class="workflow-step" data-stage="4">4. 切版製作</div>
+        <div class="workflow-step" data-stage="5">5. 程式開發</div>
+        <div class="workflow-step" data-stage="6">6. 測試驗收</div>
+    </div>
+
+    <div class="container">
+        <!-- 投影片 1: 標題頁 -->
+        <div class="slide" id="slide-1">
+            <h1>🤖 Claude Code 完整開發指南</h1>
+            <div style="text-align: center; margin: 40px 0;">
+                <p style="font-size: 1.3rem; color: #64748b; margin-bottom: 30px;">
+                    Prompts & SubAgents 最佳實踐指南
+                </p>
+                <p style="font-size: 1.1rem; color: #94a3b8;">
+                    基於六大開發流程的 AI 輔助開發最佳化策略
+                </p>
+            </div>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>📋 課程大綱</h3>
+                    <ul>
+                        <li>六大開發流程效率分析</li>
+                        <li>階段性 Prompt 範例庫</li>
+                        <li>SubAgent 推薦與評級</li>
+                        <li>實戰應用案例</li>
+                        <li>效能提升策略</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>🎯 預期效益</h3>
+                    <ul>
+                        <li><strong>需求溝通</strong>：效率提升 60%</li>
+                        <li><strong>視覺設計</strong>：效率提升 80%</li>
+                        <li><strong>版面確認</strong>：效率提升 70%</li>
+                        <li><strong>切版製作</strong>：效率提升 90%</li>
+                        <li><strong>程式開發</strong>：效率提升 85%</li>
+                        <li><strong>測試驗收</strong>：效率提升 75%</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 投影片 2: 需求溝通階段 -->
+        <div class="slide" id="slide-2" style="display: none;">
+            <h2>1️⃣ 需求溝通階段 - 效率提升 60%</h2>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>🎯 核心 Prompts</h3>
+                    <div class="code-block">
+                        # 需求分析專用 Prompt
+                        claude "幫我分析這個需求文件，提取關鍵功能點並分類為：
+                        - 核心功能 (Must Have)
+                        - 重要功能 (Should Have)
+                        - 次要功能 (Could Have)
+
+                        @ [需求文件路徑]"
+
+                        # 用戶故事生成
+                        claude "將以下需求轉換為用戶故事格式：
+                        作為[用戶角色]，我希望[功能描述]，以便[價值說明]
+
+                        @ requirements.md"
+
+                        # 技術可行性評估
+                        claude "評估以下需求的技術實現難度和風險：
+                        [需求描述]
+
+                        請提供：
+                        1. 技術複雜度 (1-10分)
+                        2. 實現風險點
+                        3. 建議技術方案"
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>🤖 推薦 SubAgents</h3>
+                    <div class="agent-grid">
+                        <div class="agent-card">
+                            <h4>📋 sprint-prioritizer</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>專門處理需求優先級排序和功能規劃，特別適合複雜項目的需求梳理。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🔍 ux-researcher</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>用戶需求調研和用戶旅程分析，幫助理解真實的用戶需求。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>📈 analytics-reporter</h4>
+                            <div class="rating">⭐⭐⭐ (3/5)</div>
+                            <p>數據分析和需求量化，提供客觀的決策依據。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>💡 實戰技巧</h3>
+            <ul>
+                <li>使用 <span class="highlight">@ 符號</span> 快速引用需求文件</li>
+                <li>善用 <span class="highlight">魔法符號</span> 進行結構化提問</li>
+                <li>結合多個 SubAgent 進行交叉驗證</li>
+                <li>建立需求模板庫提高效率</li>
+            </ul>
+        </div>
+
+        <!-- 投影片 3: 視覺設計階段 -->
+        <div class="slide" id="slide-3" style="display: none;">
+            <h2>2️⃣ 視覺設計階段 - 效率提升 80%</h2>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>🎨 設計 Prompts</h3>
+                    <div class="code-block">
+                        # 設計風格探索
+                        claude "為 [產品名稱] 設計現代化的視覺風格：
+                        - 目標用戶：[用戶群體]
+                        - 產品定位：[商業/專業/創意]
+                        - 情感訴求：[信任/活力/創新]
+
+                        請提供：
+                        1. 色彩配色方案 (主色/輔色/強調色)
+                        2. 字體選擇建議
+                        3. 視覺元素風格 (圓角/陰影/漸層)
+                        4. 參考設計案例"
+
+                        # 組件設計系統
+                        claude "建立設計系統的組件規範：
+                        - 按鈕 (Primary/Secondary/Danger)
+                        - 表單元素 (Input/Select/Checkbox)
+                        - 卡片組件 (基本/互動/資訊)
+                        - 導航元素 (頂部/側邊/麵包屑)
+
+                        @ design-requirements.md"
+
+                        # 響應式設計規劃
+                        claude "設計響應式布局方案：
+                        - 桌面版 (1200px+)
+                        - 平板版 (768px-1199px)
+                        - 手機版 (320px-767px)
+
+                        重點考量：
+                        1. 導航適配方式
+                        2. 內容重新排列
+                        3. 互動方式調整"
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>🎨 推薦 SubAgents</h3>
+                    <div class="agent-grid">
+                        <div class="agent-card">
+                            <h4>🎨 ui-designer</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>專業的 UI 設計助手，擅長創建美觀且實用的界面設計和組件系統。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🎭 brand-guardian</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>品牌一致性維護專家，確保所有設計符合品牌調性和視覺規範。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🎪 whimsy-injector</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>為設計注入創意和驚喜元素，提升用戶體驗的愉悅感。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>📖 visual-storyteller</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>視覺敘事專家，幫助通過設計元素傳達品牌故事和產品價值。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>🔥 Pro Tips</h3>
+            <ul>
+                <li>使用 <span class="highlight">AI 圖像生成</span> 快速產出設計概念</li>
+                <li>建立 <span class="highlight">設計 Token 系統</span> 確保一致性</li>
+                <li>善用 <span class="highlight">設計模式庫</span> 提高復用性</li>
+                <li>結合 <span class="highlight">用戶回饋</span> 迭代優化設計</li>
+            </ul>
+        </div>
+
+        <!-- 投影片 4: 版面確認階段 -->
+        <div class="slide" id="slide-4" style="display: none;">
+            <h2>3️⃣ 版面確認階段 - 效率提升 70%</h2>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>📐 版面檢查 Prompts</h3>
+                    <div class="code-block">
+                        # 設計稿審查
+                        claude "請審查這個設計稿的版面配置：
+
+                        檢查項目：
+                        1. 視覺層級是否清晰
+                        2. 資訊架構是否合理
+                        3. 互動元素是否明確
+                        4. 品牌一致性檢查
+                        5. 無障礙設計考量
+
+                        @ design-mockup.figma
+                        @ brand-guidelines.md"
+
+                        # 響應式適配檢查
+                        claude "檢查響應式設計的適配性：
+
+                        裝置測試清單：
+                        - iPhone (375px)
+                        - iPad (768px)
+                        - Desktop (1200px)
+                        - 大螢幕 (1920px+)
+
+                        重點檢查：
+                        1. 文字可讀性
+                        2. 按鈕觸控區域
+                        3. 圖片適配效果
+                        4. 導航使用體驗"
+
+                        # 用戶體驗評估
+                        claude "從用戶體驗角度評估版面設計：
+
+                        評估維度：
+                        1. 操作流程順暢性 (1-10分)
+                        2. 資訊查找效率 (1-10分)
+                        3. 視覺舒適度 (1-10分)
+                        4. 學習成本 (1-10分)
+
+                        請提供具體改進建議"
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>🔍 推薦 SubAgents</h3>
+                    <div class="agent-grid">
+                        <div class="agent-card">
+                            <h4>🔍 ux-researcher</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>用戶體驗研究專家，專門分析用戶行為和界面可用性問題。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🎨 ui-designer</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>界面設計最佳化，確保版面美觀性和功能性的平衡。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>📱 mobile-app-builder</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>行動端專家，特別擅長手機和平板的版面最佳化建議。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>⚖️ legal-compliance-checker</h4>
+                            <div class="rating">⭐⭐⭐ (3/5)</div>
+                            <p>確保設計符合無障礙規範和法規要求，特別是 WCAG 標準。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>✅ 檢查清單</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>檢查項目</th>
+                        <th>重要性</th>
+                        <th>建議工具</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>視覺層級清晰度</td>
+                        <td>🔴 高</td>
+                        <td>ux-researcher</td>
+                    </tr>
+                    <tr>
+                        <td>響應式適配</td>
+                        <td>🔴 高</td>
+                        <td>mobile-app-builder</td>
+                    </tr>
+                    <tr>
+                        <td>品牌一致性</td>
+                        <td>🟡 中</td>
+                        <td>brand-guardian</td>
+                    </tr>
+                    <tr>
+                        <td>無障礙合規</td>
+                        <td>🟡 中</td>
+                        <td>legal-compliance-checker</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 投影片 5: 切版製作階段 -->
+        <div class="slide" id="slide-5" style="display: none;">
+            <h2>4️⃣ 切版製作階段 - 效率提升 90%</h2>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>⚡ 切版 Prompts</h3>
+                    <div class="code-block">
+                        # 從設計稿生成 HTML/CSS
+                        claude "將這個設計稿轉換為響應式 HTML/CSS：
+
+                        技術要求：
+                        - 使用 Flexbox/Grid 布局
+                        - 支援 RWD (mobile-first)
+                        - 語義化 HTML 標籤
+                        - CSS 變數管理顏色/間距
+                        - 最佳化效能考量
+
+                        @ design-mockup.png
+                        @ style-guide.md"
+
+                        # 組件化開發
+                        claude "建立可重用的 UI 組件：
+
+                        組件需求：
+                        - Header 導航組件
+                        - Card 卡片組件
+                        - Button 按鈕組件
+                        - Form 表單組件
+
+                        請提供：
+                        1. HTML 結構
+                        2. CSS 樣式
+                        3. 使用說明
+                        4. 變體選項"
+
+                        # CSS 最佳化
+                        claude "最佳化現有 CSS 程式碼：
+
+                        最佳化目標：
+                        1. 減少程式碼重複
+                        2. 提升載入效能
+                        3. 改善維護性
+                        4. 確保瀏覽器相容性
+
+                        @ styles/main.css"
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>🛠 推薦 SubAgents</h3>
+                    <div class="agent-grid">
+                        <div class="agent-card">
+                            <h4>🎨 frontend-developer</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>前端開發專家，精通 HTML/CSS/JavaScript，特別擅長響應式布局和組件開發。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🎨 ui-designer</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>確保切版結果符合設計稿要求，維持視覺一致性。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>📱 mobile-app-builder</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>行動端最佳化專家，確保在各種裝置上的完美顯示。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>⚡ performance-benchmarker</h4>
+                            <div class="rating">⭐⭐⭐ (3/5)</div>
+                            <p>效能最佳化分析，確保頁面載入速度和使用者體驗。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>🚀 最佳實踐</h3>
+            <ul>
+                <li><strong>Mobile-First 設計</strong>：從手機版開始，逐步擴展到桌面版</li>
+                <li><strong>CSS Grid + Flexbox</strong>：現代布局技術，簡化響應式開發</li>
+                <li><strong>CSS 變數</strong>：統一管理顏色、字體、間距等設計 token</li>
+                <li><strong>組件化思維</strong>：可重用組件提高開發效率</li>
+                <li><strong>效能優先</strong>：優化 CSS 選擇器，減少重繪和重排</li>
+            </ul>
+        </div>
+
+        <!-- 投影片 6: 程式開發階段 -->
+        <div class="slide" id="slide-6" style="display: none;">
+            <h2>5️⃣ 程式開發階段 - 效率提升 85%</h2>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>💻 開發 Prompts</h3>
+                    <div class="code-block">
+                        # 功能模組開發
+                        claude "開發 [功能名稱] 模組：
+
+                        功能需求：
+                        [詳細功能描述]
+
+                        技術規格：
+                        - 框架：React/Vue/Angular
+                        - 狀態管理：Redux/Vuex/NgRx
+                        - API 串接：RESTful/GraphQL
+                        - 錯誤處理機制
+
+                        請提供：
+                        1. 組件架構設計
+                        2. 核心程式碼實作
+                        3. 單元測試程式碼
+                        4. 使用文件"
+
+                        # API 整合開發
+                        claude "實作 API 整合功能：
+
+                        API 規格：
+                        @ api-documentation.md
+
+                        開發需求：
+                        1. 請求/回應處理
+                        2. 錯誤狀態管理
+                        3. 載入狀態顯示
+                        4. 資料快取機制
+                        5. 離線處理策略"
+
+                        # 程式碼重構
+                        claude "重構現有程式碼以提升品質：
+
+                        重構目標：
+                        1. 提高程式碼可讀性
+                        2. 減少重複程式碼
+                        3. 優化效能表現
+                        4. 增強可測試性
+
+                        @ src/components/legacy-component.js"
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>⚙️ 推薦 SubAgents</h3>
+                    <div class="agent-grid">
+                        <div class="agent-card">
+                            <h4>🎨 frontend-developer</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>前端開發全能專家，精通各種前端框架和最佳實踐。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🏗 backend-architect</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>後端架構設計專家，API 設計和伺服器端邏輯開發。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🤖 ai-engineer</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>AI 功能整合專家，機器學習模型部署和智慧功能開發。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>📱 mobile-app-builder</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>行動應用開發專家，React Native 和原生應用開發。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>⚡ performance-benchmarker</h4>
+                            <div class="rating">⭐⭐⭐ (3/5)</div>
+                            <p>效能監控和最佳化，程式碼效能分析和調校。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>🔧 開發流程最佳化</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>開發階段</th>
+                        <th>推薦 SubAgent</th>
+                        <th>效率提升</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>架構設計</td>
+                        <td>backend-architect</td>
+                        <td>+70%</td>
+                    </tr>
+                    <tr>
+                        <td>前端開發</td>
+                        <td>frontend-developer</td>
+                        <td>+90%</td>
+                    </tr>
+                    <tr>
+                        <td>API 開發</td>
+                        <td>backend-architect</td>
+                        <td>+80%</td>
+                    </tr>
+                    <tr>
+                        <td>行動端開發</td>
+                        <td>mobile-app-builder</td>
+                        <td>+85%</td>
+                    </tr>
+                    <tr>
+                        <td>效能最佳化</td>
+                        <td>performance-benchmarker</td>
+                        <td>+60%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 投影片 7: 測試驗收階段 -->
+        <div class="slide" id="slide-7" style="display: none;">
+            <h2>6️⃣ 測試驗收階段 - 效率提升 75%</h2>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>🧪 測試 Prompts</h3>
+                    <div class="code-block">
+                        # 自動化測試建立
+                        claude "為 [組件/功能] 建立完整測試套件：
+
+                        測試類型：
+                        1. 單元測試 (Unit Tests)
+                        2. 整合測試 (Integration Tests)
+                        3. 端對端測試 (E2E Tests)
+                        4. 視覺回歸測試
+
+                        測試框架：Jest/Cypress/Playwright
+
+                        請提供：
+                        1. 測試計畫和策略
+                        2. 測試程式碼實作
+                        3. 測試資料準備
+                        4. CI/CD 整合配置
+
+                        @ src/components/target-component.js"
+
+                        # 效能測試評估
+                        claude "執行應用程式效能測試：
+
+                        測試項目：
+                        1. 頁面載入速度
+                        2. 互動回應時間
+                        3. 記憶體使用情況
+                        4. 網路請求最佳化
+
+                        測試工具：Lighthouse/WebPageTest
+
+                        請提供詳細效能報告和改善建議"
+
+                        # 用戶驗收測試
+                        claude "設計用戶驗收測試流程：
+
+                        測試場景：
+                        1. 主要用戶流程測試
+                        2. 邊界條件處理
+                        3. 錯誤情況處理
+                        4. 跨瀏覽器相容性
+
+                        輸出：測試案例清單和執行腳本"
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>🔬 推薦 SubAgents</h3>
+                    <div class="agent-grid">
+                        <div class="agent-card">
+                            <h4>🧪 test-writer-fixer</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>測試專家，自動化測試撰寫和測試案例設計，確保程式碼品質。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>⚡ performance-benchmarker</h4>
+                            <div class="rating">⭐⭐⭐⭐⭐ (5/5)</div>
+                            <p>效能測試專家，深度分析應用程式效能瓶頸和最佳化建議。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>📊 test-results-analyzer</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>測試結果分析專家，統計測試數據和品質報告產生。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🌐 api-tester</h4>
+                            <div class="rating">⭐⭐⭐⭐ (4/5)</div>
+                            <p>API 測試專家，後端服務的壓力測試和介面驗證。</p>
+                        </div>
+
+                        <div class="agent-card">
+                            <h4>🔍 ux-researcher</h4>
+                            <div class="rating">⭐⭐⭐ (3/5)</div>
+                            <p>用戶體驗測試，真實用戶使用情境的驗證和回饋收集。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>✅ 測試策略金字塔</h3>
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="background: #f1f5f9; padding: 20px; border-radius: 10px; margin: 10px 0;">
+                    <strong>🔍 E2E 測試 (10%)</strong><br>
+                    <small>完整用戶流程驗證</small>
+                </div>
+                <div style="background: #e2e8f0; padding: 20px; border-radius: 10px; margin: 10px 0;">
+                    <strong>🔗 整合測試 (20%)</strong><br>
+                    <small>組件間互動驗證</small>
+                </div>
+                <div style="background: #cbd5e1; padding: 20px; border-radius: 10px; margin: 10px 0;">
+                    <strong>🧩 單元測試 (70%)</strong><br>
+                    <small>個別功能邏輯驗證</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 投影片 8: 總結與實戰應用 -->
+        <div class="slide" id="slide-8" style="display: none;">
+            <h2>🚀 總結與實戰應用</h2>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>📊 效率提升總覽</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>開發階段</th>
+                                <th>傳統耗時</th>
+                                <th>AI 輔助後</th>
+                                <th>效率提升</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>需求溝通</td>
+                                <td>5 天</td>
+                                <td>2 天</td>
+                                <td class="highlight">+60%</td>
+                            </tr>
+                            <tr>
+                                <td>視覺設計</td>
+                                <td>10 天</td>
+                                <td>2 天</td>
+                                <td class="highlight">+80%</td>
+                            </tr>
+                            <tr>
+                                <td>版面確認</td>
+                                <td>3 天</td>
+                                <td>1 天</td>
+                                <td class="highlight">+70%</td>
+                            </tr>
+                            <tr>
+                                <td>切版製作</td>
+                                <td>10 天</td>
+                                <td>1 天</td>
+                                <td class="highlight">+90%</td>
+                            </tr>
+                            <tr>
+                                <td>程式開發</td>
+                                <td>20 天</td>
+                                <td>3 天</td>
+                                <td class="highlight">+85%</td>
+                            </tr>
+                            <tr>
+                                <td>測試驗收</td>
+                                <td>8 天</td>
+                                <td>2 天</td>
+                                <td class="highlight">+75%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="background: #dcfce7; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <strong>總計：56 天 → 11 天</strong><br>
+                        <span style="color: #16a34a; font-weight: 600;">整體效率提升 80%</span>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>🎯 關鍵成功因素</h3>
+                    <ul style="margin-bottom: 30px;">
+                        <li><strong>Prompt 工程化</strong><br>
+                            <small>建立標準化的 Prompt 模板庫</small>
+                        </li>
+                        <li><strong>SubAgent 協作</strong><br>
+                            <small>善用專業 Agent 提升各階段效率</small>
+                        </li>
+                        <li><strong>魔法符號活用</strong><br>
+                            <small>@ ! / \ 符號的策略性應用</small>
+                        </li>
+                        <li><strong>迭代式改進</strong><br>
+                            <small>持續優化工作流程和 Prompt</small>
+                        </li>
+                    </ul>
+
+                    <h3>🔗 相關資源</h3>
+                    <div class="code-block">
+                        # 推薦學習資源
+                        📚 Claude Code 官方文檔
+                        🎥 SubAgent 最佳實踐影片
+                        📋 Prompt 工程完整指南
+                        🛠 開發工具整合教學
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; padding: 30px; background: #f8fafc; border-radius: 15px;">
+                <h2 style="color: #3b82f6; margin-bottom: 20px;">🎉 開始您的 AI 輔助開發之旅！</h2>
+                <p style="font-size: 1.1rem; color: #64748b;">
+                    使用這份指南，讓 Claude Code 成為您最強大的開發夥伴
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 導航控制 -->
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← 上一頁</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">下一頁 →</button>
+    </div>
+
+    <!-- 頁面計數器 -->
+    <div class="slide-counter" id="slideCounter">
+        1 / 8
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 8;
+
+        function showSlide(slideNumber) {
+            // 隱藏所有投影片
+            for (let i = 1; i <= totalSlides; i++) {
+                const slide = document.getElementById(`slide-${i}`);
+                if (slide) {
+                    slide.style.display = 'none';
+                }
+            }
+
+            // 顯示目標投影片
+            const targetSlide = document.getElementById(`slide-${slideNumber}`);
+            if (targetSlide) {
+                targetSlide.style.display = 'block';
+            }
+
+            // 更新導航狀態
+            updateNavigation();
+            updateWorkflowNavigator();
+            updateSlideCounter();
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 1 && newSlide <= totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = (currentSlide === 1);
+            nextBtn.disabled = (currentSlide === totalSlides);
+        }
+
+        function updateWorkflowNavigator() {
+            const steps = document.querySelectorAll('.workflow-step');
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+
+                const stepNumber = index + 1;
+                if (currentSlide === 1) {
+                    // 標題頁，不高亮任何階段
+                } else if (currentSlide === stepNumber + 1) {
+                    step.classList.add('active');
+                } else if (currentSlide > stepNumber + 1) {
+                    step.classList.add('completed');
+                }
+            });
+        }
+
+        function updateSlideCounter() {
+            const counter = document.getElementById('slideCounter');
+            counter.textContent = `${currentSlide} / ${totalSlides}`;
+        }
+
+        // 工作流程導航點擊事件
+        document.querySelectorAll('.workflow-step').forEach((step, index) => {
+            step.addEventListener('click', () => {
+                const targetSlide = index + 2; // +2 因為第一頁是標題頁
+                if (targetSlide <= totalSlides) {
+                    currentSlide = targetSlide;
+                    showSlide(currentSlide);
+                }
+            });
+        });
+
+        // 鍵盤導航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                changeSlide(1);
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            showSlide(1);
+        });
+    </script>
+</body>
+
+</html>

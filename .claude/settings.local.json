@@ -17,7 +17,8 @@
       "Bash(brew list:*)",
       "Bash(npm install:*)",
       "Bash(rm:*)",
-      "Bash(claude /login)"
+      "Bash(claude /login)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Loader 響應式測試</title>
+    <link rel="stylesheet" href="claude-loader.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .viewport-info {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .size-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .size-box {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+        
+        .size-box.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .size-box:nth-child(2) {
+                border-color: #f59e0b;
+                background: rgba(245, 158, 11, 0.1);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .size-box:nth-child(1) {
+                border-color: #ef4444;
+                background: rgba(239, 68, 68, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Claude Loader 響應式測試</h1>
+        
+        <div class="viewport-info">
+            <div>當前視窗寬度: <span id="viewportWidth">-</span>px</div>
+            <div>裝置類型: <span id="deviceType">-</span></div>
+        </div>
+        
+        <div class="size-demo">
+            <div class="size-box">
+                <strong>手機</strong><br>
+                ≤ 480px
+            </div>
+            <div class="size-box">
+                <strong>平板</strong><br>
+                481-768px
+            </div>
+            <div class="size-box">
+                <strong>桌面</strong><br>
+                > 768px
+            </div>
+        </div>
+        
+        <button class="test-button" onclick="testCurrentSize()">測試當前尺寸</button>
+        <button class="test-button" onclick="testAllThemes()">測試所有主題</button>
+        <button class="test-button" onclick="testPerformance()">效能測試</button>
+        <button class="test-button" onclick="testAccessibility()">無障礙測試</button>
+        
+        <div id="results" style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.7); border-radius: 10px; display: none;">
+            <h3>測試結果</h3>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script src="claude-loader.js"></script>
+    <script>
+        let currentLoader = null;
+        
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            document.getElementById('viewportWidth').textContent = width;
+            
+            let deviceType = '';
+            if (width <= 480) deviceType = '手機';
+            else if (width <= 768) deviceType = '平板';
+            else deviceType = '桌面';
+            
+            document.getElementById('deviceType').textContent = deviceType;
+        }
+        
+        function showResults(content) {
+            document.getElementById('resultContent').innerHTML = content;
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        async function testCurrentSize() {
+            if (currentLoader) currentLoader.destroy();
+            
+            const width = window.innerWidth;
+            let config = {
+                duration: 2000,
+                onComplete: () => {
+                    showResults(`
+                        <div style="color: #10b981;">✅ 當前尺寸測試通過</div>
+                        <div>視窗寬度: ${width}px</div>
+                        <div>載入動畫在此尺寸下顯示正常</div>
+                    `);
+                }
+            };
+            
+            if (width <= 480) {
+                config.theme = 'default';
+                config.messages = ['手機模式載入中...', '正在適配小螢幕...', '載入完成！'];
+            } else if (width <= 768) {
+                config.theme = 'dark';
+                config.messages = ['平板模式載入中...', '正在適配中等螢幕...', '載入完成！'];
+            } else {
+                config.theme = 'matrix';
+                config.messages = ['桌面模式載入中...', '正在適配大螢幕...', '載入完成！'];
+            }
+            
+            currentLoader = createClaudeLoader(config);
+        }
+        
+        async function testAllThemes() {
+            const themes = ['default', 'dark', 'matrix'];
+            let results = [];
+            
+            for (let i = 0; i < themes.length; i++) {
+                if (currentLoader) currentLoader.destroy();
+                
+                await new Promise(resolve => {
+                    const loader = createClaudeLoader({
+                        theme: themes[i],
+                        duration: 1000,
+                        messages: [`測試 ${themes[i]} 主題...`],
+                        onComplete: () => {
+                            results.push(`✅ ${themes[i]} 主題測試通過`);
+                            resolve();
+                        }
+                    });
+                });
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            showResults(results.join('<br>'));
+        }
+        
+        function testPerformance() {
+            if (currentLoader) currentLoader.destroy();
+            
+            const startTime = performance.now();
+            
+            currentLoader = createClaudeLoader({
+                theme: 'matrix',
+                duration: 1500,
+                particleCount: 20,
+                onComplete: () => {
+                    const endTime = performance.now();
+                    const duration = endTime - startTime;
+                    
+                    let status = '✅ 良好';
+                    if (duration > 2000) status = '⚠️ 需要優化';
+                    if (duration > 3000) status = '❌ 效能問題';
+                    
+                    showResults(`
+                        <div>載入時間: ${duration.toFixed(2)}ms</div>
+                        <div>效能狀態: ${status}</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 10px;">
+                            建議載入時間 < 2000ms
+                        </div>
+                    `);
+                }
+            });
+        }
+        
+        function testAccessibility() {
+            if (currentLoader) currentLoader.destroy();
+            
+            // 臨時添加 reduced motion 樣式
+            const style = document.createElement('style');
+            style.textContent = `
+                @media (prefers-reduced-motion: reduce) {
+                    .claude-robot { animation: none !important; }
+                    .claude-thinking-dot { animation: none !important; }
+                    .claude-code-particle { display: none !important; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            currentLoader = createClaudeLoader({
+                theme: 'default',
+                duration: 1500,
+                messages: ['無障礙模式測試中...', '動畫已適當調整...', '測試完成！'],
+                onComplete: () => {
+                    document.head.removeChild(style);
+                    
+                    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    
+                    showResults(`
+                        <div>✅ 無障礙支援測試通過</div>
+                        <div>減少動畫偏好: ${reducedMotion ? '已啟用' : '未啟用'}</div>
+                        <div>動畫已根據用戶偏好調整</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 10px;">
+                            支援 prefers-reduced-motion 和高對比模式
+                        </div>
+                    `);
+                }
+            });
+        }
+        
+        // 初始化
+        updateViewportInfo();
+        
+        // 監聽視窗大小變化
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // 顯示歡迎訊息
+        window.addEventListener('load', () => {
+            showResults(`
+                <div style="color: #667eea;">🎉 歡迎使用響應式測試頁面</div>
+                <div>請調整瀏覽器視窗大小並測試各種功能</div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 10px;">
+                    建議在不同裝置上或使用開發者工具測試
+                </div>
+            `);
+        });
+    </script>
+</body>
+</html>

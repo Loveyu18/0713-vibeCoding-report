@@ -14,6 +14,8 @@
 - `presentations/`: 存放用於分享研究成果的 HTML 簡報。
 - `projects/`: 包含特定的案例研究或子專案，例如 `amazon-kiro-ide` 的探索。
 - `.claude/`: 包含 Claude AI 助理的設定和提示，顯示此研究採用了多種 AI 工具。
+- `claudeCode/`: 包含與 Claude AI 相關的簡報和程式碼。
+- `cleanup-test/`: 包含一個關於海灘清潔活動的設計原型或測試專案。
 
 ## 設計規範 (Design Specification)
 
