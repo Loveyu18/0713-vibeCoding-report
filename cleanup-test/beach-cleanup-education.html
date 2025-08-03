@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教育資源 - 淨灘資訊平台</title>
+    <style>
+        /* 繼承 Liquid Glass 設計系統 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: rgba(0, 0, 0, 0.1);
+            --ocean-blue: #2563eb;
+            --ocean-light: #60a5fa;
+            --coral: #f97316;
+            --sand: #fef3c7;
+            --seafoam: #10b981;
+            --sunset: #f59e0b;
+            --deep-blue: #1e40af;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --success: #059669;
+            --warning: #d97706;
+            --error: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--ocean-blue) 0%, var(--ocean-light) 50%, var(--seafoam) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+        }
+
+        /* 導航列 */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ocean-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--ocean-blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--ocean-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--deep-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+        }
+
+        /* 主要內容 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 搜尋區域 */
+        .search-section {
+            margin-bottom: 40px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--ocean-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* 內容分類 */
+        .category-tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .category-tab:hover, .category-tab.active {
+            background: var(--ocean-blue);
+            color: white;
+            border-color: var(--ocean-blue);
+            transform: translateY(-2px);
+        }
+
+        /* 內容網格 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .content-card {
+            padding: 24px;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .content-type {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--seafoam);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .content-type.video { background: var(--coral); }
+        .content-type.article { background: var(--ocean-blue); }
+        .content-type.guide { background: var(--sunset); }
+        .content-type.quiz { background: var(--success); }
+
+        .content-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .content-excerpt {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .content-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .content-duration {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .content-difficulty {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .difficulty-beginner { background: var(--seafoam); color: white; }
+        .difficulty-intermediate { background: var(--sunset); color: white; }
+        .difficulty-advanced { background: var(--coral); color: white; }
+
+        .content-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+
+        .btn-learn {
+            background: var(--ocean-blue);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-learn:hover {
+            background: var(--deep-blue);
+        }
+
+        .btn-bookmark {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--glass-border);
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-bookmark:hover, .btn-bookmark.bookmarked {
+            background: var(--sunset);
+            color: white;
+            border-color: var(--sunset);
+        }
+
+        /* 推薦學習路徑 */
+        .learning-path {
+            margin-bottom: 40px;
+            padding: 32px;
+        }
+
+        .path-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .path-steps {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 16px 0;
+        }
+
+        .path-step {
+            min-width: 200px;
+            padding: 20px;
+            background: var(--glass-light);
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .path-step:hover {
+            border-color: var(--ocean-blue);
+            transform: scale(1.05);
+        }
+
+        .path-step.completed {
+            border-color: var(--seafoam);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--ocean-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin: 0 auto 12px;
+        }
+
+        .step-number.completed {
+            background: var(--seafoam);
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .step-description {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .path-connector {
+            color: var(--ocean-blue);
+            font-size: 1.5rem;
+        }
+
+        /* 互動測驗區域 */
+        .quiz-section {
+            margin-bottom: 40px;
+            padding: 32px;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .quiz-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .quiz-subtitle {
+            color: var(--text-light);
+        }
+
+        .quiz-question {
+            background: var(--glass-light);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--ocean-blue);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--ocean-blue);
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--seafoam);
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error);
+            background: rgba(220, 38, 38, 0.2);
+        }
+
+        .quiz-result {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .quiz-result.correct {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .quiz-result.incorrect {
+            background: rgba(220, 38, 38, 0.2);
+            color: var(--error);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .category-tabs {
+                gap: 8px;
+            }
+
+            .category-tab {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .path-steps {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .path-connector {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 100px 16px 40px;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .content-actions {
+                flex-direction: column;
+            }
+
+            .btn-bookmark {
+                width: auto;
+            }
+        }
+
+        /* 動畫效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar glass" role="navigation" aria-label="主要導航">
+        <a href="beach-cleanup-homepage.html" class="logo">
+            <span>🌊</span>
+            淨灘平台
+        </a>
+        <ul class="nav-menu">
+            <li><a href="beach-cleanup-homepage.html" class="nav-link">首頁</a></li>
+            <li><a href="beach-cleanup-activities.html" class="nav-link">活動中心</a></li>
+            <li><a href="beach-cleanup-dashboard.html" class="nav-link">數據儀表板</a></li>
+            <li><a href="#" class="nav-link active">教育資源</a></li>
+            <li><a href="beach-cleanup-community.html" class="nav-link">社群</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="#" class="btn btn-secondary">登入</a>
+            <a href="#" class="btn btn-primary">註冊</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- 頁面標題 -->
+        <header class="page-header animate-fade-in-up">
+            <h1 class="page-title">教育資源</h1>
+            <p class="page-subtitle">學習海洋保護知識，掌握淨灘技巧，成為專業的環保志工</p>
+        </header>
+
+        <!-- 搜尋區域 -->
+        <section class="search-section glass">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="搜尋課程、文章或指南..." aria-label="搜尋教育資源">
+                <button class="btn btn-primary">搜尋</button>
+            </div>
+        </section>
+
+        <!-- 內容分類 -->
+        <nav class="category-tabs" aria-label="內容分類">
+            <button class="category-tab active">全部內容</button>
+            <button class="category-tab">海洋保護</button>
+            <button class="category-tab">淨灘技巧</button>
+            <button class="category-tab">垃圾分類</button>
+            <button class="category-tab">生態知識</button>
+            <button class="category-tab">互動測驗</button>
+        </nav>
+
+        <!-- 推薦學習路徑 -->
+        <section class="learning-path glass">
+            <h2 class="path-title">🎯 推薦學習路徑：從新手到專家</h2>
+            <div class="path-steps">
+                <div class="path-step completed">
+                    <div class="step-number completed">✓</div>
+                    <div class="step-title">海洋環境認識</div>
+                    <div class="step-description">了解海洋生態系統與污染問題</div>
+                </div>
+                <div class="path-connector">→</div>
+                <div class="path-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">淨灘基礎技能</div>
+                    <div class="step-description">學習正確的清理方法與安全須知</div>
+                </div>
+                <div class="path-connector">→</div>
+                <div class="path-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">垃圾分類專精</div>
+                    <div class="step-description">掌握海洋廢棄物分類與記錄</div>
+                </div>
+                <div class="path-connector">→</div>
+                <div class="path-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">活動組織領導</div>
+                    <div class="step-description">成為淨灘活動的組織者與領導者</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 教育內容 -->
+        <section class="content-grid">
+            <article class="content-card glass animate-fade-in-up">
+                <div class="content-type video">影片課程</div>
+                <h3 class="content-title">海洋塑膠污染：從源頭到解決方案</h3>
+                <div class="content-meta">
+                    <div class="content-duration">
+                        <span>🕒</span>
+                        <span>25 分鐘</span>
+                    </div>
+                    <div class="content-difficulty difficulty-beginner">初學者</div>
+                </div>
+                <p class="content-excerpt">
+                    深入了解塑膠污染如何影響海洋生態系統，從微塑膠的形成到對海洋生物的危害，以及我們可以採取的行動...
+                </p>
+                <div class="content-actions">
+                    <button class="btn btn-learn btn-small">開始學習</button>
+                    <button class="btn btn-bookmark btn-small" title="收藏">⭐</button>
+                </div>
+            </article>
+
+            <article class="content-card glass animate-fade-in-up">
+                <div class="content-type guide">實用指南</div>
+                <h3 class="content-title">淨灘活動完整指南：從規劃到執行</h3>
+                <div class="content-meta">
+                    <div class="content-duration">
+                        <span>📖</span>
+                        <span>15 分鐘閱讀</span>
+                    </div>
+                    <div class="content-difficulty difficulty-intermediate">中級</div>
+                </div>
+                <p class="content-excerpt">
+                    完整的淨灘活動組織手冊，包含場地選擇、人員安排、工具準備、安全措施和後續處理等所有環節...
+                </p>
+                <div class="content-actions">
+                    <button class="btn btn-learn btn-small">閱讀指南</button>
+                    <button class="btn btn-bookmark btn-small bookmarked" title="已收藏">⭐</button>
+                </div>
+            </article>
+
+            <article class="content-card glass animate-fade-in-up">
+                <div class="content-type article">知識文章</div>
+                <h3 class="content-title">台灣海岸線廢棄物調查報告分析</h3>
+                <div class="content-meta">
+                    <div class="content-duration">
+                        <span>📊</span>
+                        <span>12 分鐘閱讀</span>
+                    </div>
+                    <div class="content-difficulty difficulty-intermediate">中級</div>
+                </div>
+                <p class="content-excerpt">
+                    基於最新的科學研究數據，分析台灣各海岸區域的廢棄物類型、來源和分布趨勢，提供數據驅動的洞察...
+                </p>
+                <div class="content-actions">
+                    <button class="btn btn-learn btn-small">閱讀文章</button>
+                    <button class="btn btn-bookmark btn-small" title="收藏">⭐</button>
+                </div>
+            </article>
+
+            <article class="content-card glass animate-fade-in-up">
+                <div class="content-type quiz">互動測驗</div>
+                <h3 class="content-title">海洋保護知識測驗：基礎篇</h3>
+                <div class="content-meta">
+                    <div class="content-duration">
+                        <span>🎯</span>
+                        <span>10 題測驗</span>
+                    </div>
+                    <div class="content-difficulty difficulty-beginner">初學者</div>
+                </div>
+                <p class="content-excerpt">
+                    透過10道精心設計的題目，測試你對海洋環境保護的基礎認知，完成後可獲得學習建議和進階課程推薦...
+                </p>
+                <div class="content-actions">
+                    <button class="btn btn-learn btn-small">開始測驗</button>
+                    <button class="btn btn-bookmark btn-small" title="收藏">⭐</button>
+                </div>
+            </article>
+
+            <article class="content-card glass animate-fade-in-up">
+                <div class="content-type video">影片課程</div>
+                <h3 class="content-title">正確的淨灘技巧與安全須知</h3>
+                <div class="content-meta">
+                    <div class="content-duration">
+                        <span>🕒</span>
+                        <span>18 分鐘</span>
+                    </div>
+                    <div class="content-difficulty difficulty-beginner">初學者</div>
+                </div>
+                <p class="content-excerpt">
+                    學習專業的淨灘技巧，包含工具使用、垃圾分類、數據記錄和團隊協作，確保清理過程安全有效...
+                </p>
+                <div class="content-actions">
+                    <button class="btn btn-learn btn-small">觀看影片</button>
+                    <button class="btn btn-bookmark btn-small" title="收藏">⭐</button>
+                </div>
+            </article>
+
+            <article class="content-card glass animate-fade-in-up">
+                <div class="content-type guide">實用指南</div>
+                <h3 class="content-title">海洋廢棄物識別與分類手冊</h3>
+                <div class="content-meta">
+                    <div class="content-duration">
+                        <span>📚</span>
+                        <span>20 分鐘閱讀</span>
+                    </div>
+                    <div class="content-difficulty difficulty-advanced">進階</div>
+                </div>
+                <p class="content-excerpt">
+                    詳細的廢棄物識別指南，包含常見海洋垃圾的分類方法、回收處理方式和數據記錄標準，成為淨灘專家必備知識...
+                </p>
+                <div class="content-actions">
+                    <button class="btn btn-learn btn-small">下載手冊</button>
+                    <button class="btn btn-bookmark btn-small" title="收藏">⭐</button>
+                </div>
+            </article>
+        </section>
+
+        <!-- 互動測驗示例 -->
+        <section class="quiz-section glass">
+            <div class="quiz-header">
+                <h2 class="quiz-title">📝 快速測驗：海洋保護基礎知識</h2>
+                <p class="quiz-subtitle">測試你對海洋環境保護的了解程度</p>
+            </div>
+            
+            <div class="quiz-question">
+                <div class="question-text">Q1. 以下哪種材料在海洋中分解時間最長？</div>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-answer="wrong">紙類製品</div>
+                    <div class="quiz-option" data-answer="wrong">木材</div>
+                    <div class="quiz-option" data-answer="correct">塑膠瓶</div>
+                    <div class="quiz-option" data-answer="wrong">食物殘渣</div>
+                </div>
+                <div class="quiz-result" style="display: none;"></div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="btn btn-primary">檢查答案</button>
+                <button class="btn btn-secondary" style="margin-left: 12px;">下一題</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 搜尋功能
+            const searchInput = document.querySelector('.search-input');
+            const searchBtn = document.querySelector('.search-section .btn-primary');
+            
+            searchBtn.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                if (query) {
+                    console.log('搜尋教育資源:', query);
+                    // 實際實作時會連接到後端 API
+                }
+            });
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+
+            // 分類標籤
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    console.log('分類篩選:', this.textContent);
+                });
+            });
+
+            // 學習路徑步驟
+            document.querySelectorAll('.path-step').forEach(step => {
+                step.addEventListener('click', function() {
+                    if (!this.classList.contains('completed')) {
+                        console.log('開始學習步驟:', this.querySelector('.step-title').textContent);
+                    }
+                });
+            });
+
+            // 內容卡片互動
+            document.querySelectorAll('.content-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // 學習按鈕
+            document.querySelectorAll('.btn-learn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const title = this.closest('.content-card').querySelector('.content-title').textContent;
+                    alert(`開始學習：${title}\n\n此功能將在實際開發時實作`);
+                });
+            });
+
+            // 收藏按鈕
+            document.querySelectorAll('.btn-bookmark').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.classList.toggle('bookmarked');
+                    const isBookmarked = this.classList.contains('bookmarked');
+                    console.log(isBookmarked ? '已收藏' : '取消收藏');
+                });
+            });
+
+            // 測驗功能
+            let quizAnswered = false;
+            
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    if (quizAnswered) return;
+                    
+                    // 移除其他選項的選擇狀態
+                    this.parentNode.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 選擇當前選項
+                    this.classList.add('selected');
+                });
+            });
+
+            document.querySelector('.quiz-section .btn-primary').addEventListener('click', function() {
+                if (quizAnswered) return;
+                
+                const selectedOption = document.querySelector('.quiz-option.selected');
+                if (!selectedOption) {
+                    alert('請先選擇一個答案');
+                    return;
+                }
+                
+                const isCorrect = selectedOption.dataset.answer === 'correct';
+                const resultDiv = document.querySelector('.quiz-result');
+                
+                // 顯示正確答案
+                document.querySelectorAll('.quiz-option').forEach(option => {
+                    if (option.dataset.answer === 'correct') {
+                        option.classList.add('correct');
+                    } else if (option.classList.contains('selected')) {
+                        option.classList.add('incorrect');
+                    }
+                });
+                
+                // 顯示結果
+                resultDiv.style.display = 'block';
+                if (isCorrect) {
+                    resultDiv.className = 'quiz-result correct';
+                    resultDiv.textContent = '🎉 答對了！塑膠瓶在海洋中需要約450年才能完全分解。';
+                } else {
+                    resultDiv.className = 'quiz-result incorrect';
+                    resultDiv.textContent = '❌ 答案錯誤。正確答案是塑膠瓶，需要約450年才能分解。';
+                }
+                
+                quizAnswered = true;
+                this.textContent = '已完成';
+                this.disabled = true;
+            });
+
+            // 滾動動畫
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.content-card, .quiz-section').forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

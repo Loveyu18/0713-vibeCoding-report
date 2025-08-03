@@ -25,6 +25,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
     -   `amazon-kiro-ide-tasks.md` - 6 天工作計劃分解
 -   **tools/**: 實用工具應用
     -   `ai-prompt-generator.html` - 互動式 AI 提示詞產生器
+-   **beach-cleanup-platform/**: 淨灘資訊網站靜態原型
+    -   `beach-cleanup-homepage.html` - 首頁（輪播、即時狀況、快速參與）
+    -   `beach-cleanup-activities.html` - 活動中心（活動列表、搜尋篩選）
+    -   `beach-cleanup-dashboard.html` - 數據儀表板（統計圖表、成果展示）
+    -   `beach-cleanup-education.html` - 教育資源（知識內容、互動測驗）
+    -   `beach-cleanup-community.html` - 社群功能（志工檔案、討論區）
 -   **assets/**: 靜態資源和圖片
 
 ### 關鍵技術
@@ -49,6 +55,13 @@ open presentations/frontend-research-architecture.html    # 主入口點
 open presentations/amazon-kiro-ide-presentation.html     # Kiro IDE 分析
 open presentations/vibe-coding-presentation-simple.html  # Vibe Coding 指南
 open tools/ai-prompt-generator.html                      # AI 工具
+
+# 淨灘資訊網站原型
+open beach-cleanup-homepage.html                         # 淨灘平台首頁
+open beach-cleanup-activities.html                       # 活動中心頁面
+open beach-cleanup-dashboard.html                        # 數據儀表板
+open beach-cleanup-education.html                        # 教育資源
+open beach-cleanup-community.html                        # 社群功能
 
 # 查看文檔
 open documents/guides/Vibe-Coding-實踐指南.md           # 實施指南
@@ -80,8 +93,9 @@ open documents/guides/claude-code-user-manual.md        # Claude Code 手冊
 3. **AI 開發工具**：現代 AI IDE 的比較分析
 4. **前端效率**：AI 驅動開發工作流程改進的研究
 5. **Claude Code**：工具與應用介紹
+6. **淨灘資訊網站**：完整的前端原型開發專案
 
-這項工作展示了 AI 工具在文檔創建、簡報設計和技術分析中的實際應用 - 既作為研究成果，也是 AI 輔助內容創作的範例。
+這項工作展示了 AI 工具在文檔創建、簡報設計、技術分析和實際專案開發中的應用 - 既作為研究成果，也是 AI 輔助內容創作與快速原型開發的範例。
 
 ## 特殊考量
 

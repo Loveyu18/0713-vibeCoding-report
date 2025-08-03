@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社群 - 淨灘資訊平台</title>
+    <style>
+        /* 繼承 Liquid Glass 設計系統 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: rgba(0, 0, 0, 0.1);
+            --ocean-blue: #2563eb;
+            --ocean-light: #60a5fa;
+            --coral: #f97316;
+            --sand: #fef3c7;
+            --seafoam: #10b981;
+            --sunset: #f59e0b;
+            --deep-blue: #1e40af;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --success: #059669;
+            --warning: #d97706;
+            --error: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--ocean-blue) 0%, var(--ocean-light) 50%, var(--seafoam) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+        }
+
+        /* 導航列 */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ocean-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--ocean-blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--ocean-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--deep-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+        }
+
+        /* 主要內容 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 社群導航 */
+        .community-nav {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--ocean-blue);
+            color: white;
+            border-color: var(--ocean-blue);
+            transform: translateY(-2px);
+        }
+
+        /* 內容區域佈局 */
+        .community-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        /* 志工排行榜 */
+        .leaderboard-section {
+            padding: 32px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .volunteer-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--glass-light);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .volunteer-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .rank-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #8b5a00; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #e5e7eb); color: #666; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #f97316); }
+        .rank-other { background: var(--ocean-light); }
+
+        .volunteer-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--ocean-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .volunteer-info {
+            flex: 1;
+        }
+
+        .volunteer-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .volunteer-stats {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            gap: 16px;
+        }
+
+        .achievement-badges {
+            display: flex;
+            gap: 4px;
+        }
+
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-gold { background: #ffd700; color: #8b5a00; }
+        .badge-silver { background: #c0c0c0; color: #666; }
+        .badge-green { background: var(--seafoam); color: white; }
+
+        /* 討論區 */
+        .forum-section {
+            padding: 32px;
+        }
+
+        .forum-post {
+            background: var(--glass-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .forum-post:hover {
+            transform: translateY(-2px);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .post-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .post-category {
+            padding: 2px 8px;
+            background: var(--seafoam);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .post-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .post-title:hover {
+            color: var(--ocean-blue);
+        }
+
+        .post-content {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .post-action:hover {
+            color: var(--ocean-blue);
+        }
+
+        /* 成就系統 */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .achievement-card {
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            background: var(--sunset);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .achievement-icon.unlocked {
+            background: var(--seafoam);
+        }
+
+        .achievement-icon.locked {
+            background: var(--text-light);
+            opacity: 0.5;
+        }
+
+        .achievement-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .achievement-description {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .achievement-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--seafoam);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* 分享牆 */
+        .share-wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .share-post {
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .share-image {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(45deg, var(--ocean-light), var(--seafoam));
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .share-content {
+            margin-bottom: 12px;
+        }
+
+        .share-text {
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .share-location {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .share-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .share-likes {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .share-likes:hover {
+            color: var(--coral);
+        }
+
+        /* 新增內容表單 */
+        .add-content {
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .content-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-input, .form-textarea {
+            padding: 12px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--ocean-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 1024px) {
+            .community-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .community-nav {
+                gap: 8px;
+            }
+
+            .nav-tab {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+
+            .volunteer-stats {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 100px 16px 40px;
+            }
+
+            .share-wall {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 動畫效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar glass" role="navigation" aria-label="主要導航">
+        <a href="beach-cleanup-homepage.html" class="logo">
+            <span>🌊</span>
+            淨灘平台
+        </a>
+        <ul class="nav-menu">
+            <li><a href="beach-cleanup-homepage.html" class="nav-link">首頁</a></li>
+            <li><a href="beach-cleanup-activities.html" class="nav-link">活動中心</a></li>
+            <li><a href="beach-cleanup-dashboard.html" class="nav-link">數據儀表板</a></li>
+            <li><a href="beach-cleanup-education.html" class="nav-link">教育資源</a></li>
+            <li><a href="#" class="nav-link active">社群</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="#" class="btn btn-secondary">登入</a>
+            <a href="#" class="btn btn-primary">註冊</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- 頁面標題 -->
+        <header class="page-header animate-fade-in-up">
+            <h1 class="page-title">社群</h1>
+            <p class="page-subtitle">與志同道合的環保夥伴交流，分享淨灘經驗，共同守護海洋</p>
+        </header>
+
+        <!-- 社群導航 -->
+        <nav class="community-nav" aria-label="社群功能導航">
+            <button class="nav-tab active">
+                <span>👥</span>志工排行榜
+            </button>
+            <button class="nav-tab">
+                <span>💬</span>討論論壇
+            </button>
+            <button class="nav-tab">
+                <span>🏆</span>成就系統
+            </button>
+            <button class="nav-tab">
+                <span>📸</span>分享牆
+            </button>
+        </nav>
+
+        <!-- 主要內容區域 -->
+        <div class="community-layout">
+            <!-- 左側主要內容 -->
+            <main class="main-content">
+                <!-- 志工排行榜 -->
+                <section class="leaderboard-section glass" id="leaderboard">
+                    <h2 class="section-title">
+                        <span>🏅</span>本月志工排行榜
+                    </h2>
+                    
+                    <div class="leaderboard-list">
+                        <div class="volunteer-card animate-fade-in-up">
+                            <div class="rank-badge rank-1">1</div>
+                            <div class="volunteer-avatar">王</div>
+                            <div class="volunteer-info">
+                                <div class="volunteer-name">王小明</div>
+                                <div class="volunteer-stats">
+                                    <span>參與活動: 15 次</span>
+                                    <span>清理垃圾: 120 公斤</span>
+                                    <span>服務時數: 85 小時</span>
+                                </div>
+                            </div>
+                            <div class="achievement-badges">
+                                <span class="badge badge-gold">環保達人</span>
+                                <span class="badge badge-silver">活動王</span>
+                            </div>
+                        </div>
+
+                        <div class="volunteer-card animate-fade-in-up">
+                            <div class="rank-badge rank-2">2</div>
+                            <div class="volunteer-avatar">李</div>
+                            <div class="volunteer-info">
+                                <div class="volunteer-name">李美華</div>
+                                <div class="volunteer-stats">
+                                    <span>參與活動: 12 次</span>
+                                    <span>清理垃圾: 95 公斤</span>
+                                    <span>服務時數: 72 小時</span>
+                                </div>
+                            </div>
+                            <div class="achievement-badges">
+                                <span class="badge badge-silver">海洋守護者</span>
+                                <span class="badge badge-green">新星</span>
+                            </div>
+                        </div>
+
+                        <div class="volunteer-card animate-fade-in-up">
+                            <div class="rank-badge rank-3">3</div>
+                            <div class="volunteer-avatar">陳</div>
+                            <div class="volunteer-info">
+                                <div class="volunteer-name">陳志強</div>
+                                <div class="volunteer-stats">
+                                    <span>參與活動: 10 次</span>
+                                    <span>清理垃圾: 88 公斤</span>
+                                    <span>服務時數: 65 小時</span>
+                                </div>
+                            </div>
+                            <div class="achievement-badges">
+                                <span class="badge badge-green">組織者</span>
+                            </div>
+                        </div>
+
+                        <div class="volunteer-card animate-fade-in-up">
+                            <div class="rank-badge rank-other">4</div>
+                            <div class="volunteer-avatar">林</div>
+                            <div class="volunteer-info">
+                                <div class="volunteer-name">林雅婷</div>
+                                <div class="volunteer-stats">
+                                    <span>參與活動: 8 次</span>
+                                    <span>清理垃圾: 67 公斤</span>
+                                    <span>服務時數: 52 小時</span>
+                                </div>
+                            </div>
+                            <div class="achievement-badges">
+                                <span class="badge badge-green">積極參與</span>
+                            </div>
+                        </div>
+
+                        <div class="volunteer-card animate-fade-in-up">
+                            <div class="rank-badge rank-other">5</div>
+                            <div class="volunteer-avatar">張</div>
+                            <div class="volunteer-info">
+                                <div class="volunteer-name">張國華</div>
+                                <div class="volunteer-stats">
+                                    <span>參與活動: 7 次</span>
+                                    <span>清理垃圾: 54 公斤</span>
+                                    <span>服務時數: 45 小時</span>
+                                </div>
+                            </div>
+                            <div class="achievement-badges">
+                                <span class="badge badge-green">熱心志工</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 討論論壇 -->
+                <section class="forum-section glass" id="forum" style="display: none;">
+                    <h2 class="section-title">
+                        <span>💬</span>討論論壇
+                    </h2>
+
+                    <!-- 新增討論 -->
+                    <div class="add-content glass-light">
+                        <form class="content-form">
+                            <input type="text" class="form-input" placeholder="討論主題" required>
+                            <textarea class="form-textarea" rows="3" placeholder="分享你的想法或提出問題..." required></textarea>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary">取消</button>
+                                <button type="submit" class="btn btn-primary">發布討論</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="forum-posts">
+                        <article class="forum-post animate-fade-in-up">
+                            <div class="post-header">
+                                <div class="post-avatar">王</div>
+                                <div class="post-meta">
+                                    <div class="post-author">王小明</div>
+                                    <div class="post-time">2 小時前</div>
+                                </div>
+                                <div class="post-category">淨灘技巧</div>
+                            </div>
+                            <h3 class="post-title">夏季淨灘的防曬和補水建議</h3>
+                            <p class="post-content">
+                                最近參與了幾次夏季淨灘活動，發現很多志工都忽略了防曬的重要性。想跟大家分享一些實用的防護措施，包括防曬用品選擇、補水時機和中暑預防...
+                            </p>
+                            <div class="post-actions">
+                                <span class="post-action">
+                                    <span>👍</span>12 個讚
+                                </span>
+                                <span class="post-action">
+                                    <span>💬</span>5 則回覆
+                                </span>
+                                <span class="post-action">
+                                    <span>🔗</span>分享
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="forum-post animate-fade-in-up">
+                            <div class="post-header">
+                                <div class="post-avatar">李</div>
+                                <div class="post-meta">
+                                    <div class="post-author">李美華</div>
+                                    <div class="post-time">5 小時前</div>
+                                </div>
+                                <div class="post-category">經驗分享</div>
+                            </div>
+                            <h3 class="post-title">淡水河口淨灘心得分享</h3>
+                            <p class="post-content">
+                                昨天參與了淡水河口的淨灘活動，收穫滿滿！這次發現的垃圾類型和之前很不同，特別是發現了很多來自上游的廢棄物...
+                            </p>
+                            <div class="post-actions">
+                                <span class="post-action">
+                                    <span>👍</span>8 個讚
+                                </span>
+                                <span class="post-action">
+                                    <span>💬</span>3 則回覆
+                                </span>
+                                <span class="post-action">
+                                    <span>🔗</span>分享
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="forum-post animate-fade-in-up">
+                            <div class="post-header">
+                                <div class="post-avatar">陳</div>
+                                <div class="post-meta">
+                                    <div class="post-author">陳志強</div>
+                                    <div class="post-time">1 天前</div>
+                                </div>
+                                <div class="post-category">問題求助</div>
+                            </div>
+                            <h3 class="post-title">如何組織企業淨灘活動？</h3>
+                            <p class="post-content">
+                                公司想要組織大型的企業志工淨灘活動，大約100人參與。請問有經驗的志工朋友可以分享一些組織心得嗎？特別是場地選擇和物資準備...
+                            </p>
+                            <div class="post-actions">
+                                <span class="post-action">
+                                    <span>👍</span>15 個讚
+                                </span>
+                                <span class="post-action">
+                                    <span>💬</span>12 則回覆
+                                </span>
+                                <span class="post-action">
+                                    <span>🔗</span>分享
+                                </span>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- 成就系統 -->
+                <section class="achievements-section" id="achievements" style="display: none;">
+                    <div class="glass" style="padding: 32px;">
+                        <h2 class="section-title">
+                            <span>🏆</span>成就系統
+                        </h2>
+                        
+                        <div class="achievements-grid">
+                            <div class="achievement-card glass-light">
+                                <div class="achievement-icon unlocked">🌊</div>
+                                <div class="achievement-title">海洋新手</div>
+                                <div class="achievement-description">完成第一次淨灘活動</div>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar" style="width: 100%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card glass-light">
+                                <div class="achievement-icon unlocked">🗑️</div>
+                                <div class="achievement-title">垃圾清理員</div>
+                                <div class="achievement-description">累計清理 50 公斤垃圾</div>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar" style="width: 100%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card glass-light">
+                                <div class="achievement-icon unlocked">👥</div>
+                                <div class="achievement-title">團隊合作者</div>
+                                <div class="achievement-description">參與 10 次團體活動</div>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar" style="width: 100%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card glass-light">
+                                <div class="achievement-icon">⏰</div>
+                                <div class="achievement-title">時間守護者</div>
+                                <div class="achievement-description">累計志工服務 100 小時</div>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar" style="width: 75%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card glass-light">
+                                <div class="achievement-icon locked">🏖️</div>
+                                <div class="achievement-title">海灘探索者</div>
+                                <div class="achievement-description">在 20 個不同海灘參與淨灘</div>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar" style="width: 60%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card glass-light">
+                                <div class="achievement-icon locked">📚</div>
+                                <div class="achievement-title">知識達人</div>
+                                <div class="achievement-description">完成所有教育課程</div>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar" style="width: 30%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 分享牆 -->
+                <section class="share-section" id="share" style="display: none;">
+                    <div class="glass" style="padding: 32px;">
+                        <h2 class="section-title">
+                            <span>📸</span>分享牆
+                        </h2>
+
+                        <!-- 新增分享 -->
+                        <div class="add-content glass-light">
+                            <form class="content-form">
+                                <textarea class="form-textarea" rows="2" placeholder="分享你的淨灘時刻..." required></textarea>
+                                <input type="text" class="form-input" placeholder="地點 (選填)">
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary">📷 上傳照片</button>
+                                    <button type="submit" class="btn btn-primary">發布</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="share-wall">
+                            <article class="share-post glass-light animate-fade-in-up">
+                                <div class="share-image">🏖️</div>
+                                <div class="share-content">
+                                    <p class="share-text">今天在墾丁的淨灘活動太有意義了！清理了滿滿一袋垃圾，看到乾淨的沙灘真的很有成就感 💪</p>
+                                    <div class="share-location">
+                                        <span>📍</span>屏東縣恆春鎮墾丁
+                                    </div>
+                                </div>
+                                <div class="share-footer">
+                                    <span>王小明 • 3 小時前</span>
+                                    <div class="share-likes">
+                                        <span>❤️</span>24
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="share-post glass-light animate-fade-in-up">
+                                <div class="share-image">🌅</div>
+                                <div class="share-content">
+                                    <p class="share-text">早起參與淨灘活動，意外看到美麗的日出！環保行動+美景，今天心情超棒 ☀️</p>
+                                    <div class="share-location">
+                                        <span>📍</span>花蓮縣花蓮市七星潭
+                                    </div>
+                                </div>
+                                <div class="share-footer">
+                                    <span>李美華 • 6 小時前</span>
+                                    <div class="share-likes">
+                                        <span>❤️</span>18
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="share-post glass-light animate-fade-in-up">
+                                <div class="share-image">👨‍👩‍👧‍👦</div>
+                                <div class="share-content">
+                                    <p class="share-text">全家一起參與淨灘，小朋友們學到很多環保知識，也玩得很開心！</p>
+                                    <div class="share-location">
+                                        <span>📍</span>新北市淡水區
+                                    </div>
+                                </div>
+                                <div class="share-footer">
+                                    <span>陳志強 • 1 天前</span>
+                                    <div class="share-likes">
+                                        <span>❤️</span>32
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="share-post glass-light animate-fade-in-up">
+                                <div class="share-image">🐢</div>
+                                <div class="share-content">
+                                    <p class="share-text">在淨灘過程中發現小海龜！提醒大家清理垃圾時要特別注意保護海洋生物 🐢</p>
+                                    <div class="share-location">
+                                        <span>📍</span>台東縣卑南鄉
+                                    </div>
+                                </div>
+                                <div class="share-footer">
+                                    <span>林雅婷 • 2 天前</span>
+                                    <div class="share-likes">
+                                        <span>❤️</span>45
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- 右側邊欄 -->
+            <aside class="sidebar">
+                <!-- 快速統計 -->
+                <div class="glass" style="padding: 24px; margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 16px; color: var(--text-dark);">📊 社群統計</h3>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-light);">註冊志工</span>
+                            <span style="font-weight: 600; color: var(--ocean-blue);">2,847 人</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-light);">活躍討論</span>
+                            <span style="font-weight: 600; color: var(--seafoam);">156 則</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-light);">分享內容</span>
+                            <span style="font-weight: 600; color: var(--coral);">892 則</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-light);">解鎖成就</span>
+                            <span style="font-weight: 600; color: var(--sunset);">1,245 個</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最新動態 -->
+                <div class="glass" style="padding: 24px;">
+                    <h3 style="margin-bottom: 16px; color: var(--text-dark);">🔔 最新動態</h3>
+                    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem;">
+                        <div style="color: var(--text-light);">
+                            <strong style="color: var(--text-dark);">王小明</strong> 解鎖了「環保達人」成就
+                            <div style="font-size: 0.8rem; margin-top: 2px;">2 小時前</div>
+                        </div>
+                        <div style="color: var(--text-light);">
+                            <strong style="color: var(--text-dark);">李美華</strong> 發布了新的討論
+                            <div style="font-size: 0.8rem; margin-top: 2px;">4 小時前</div>
+                        </div>
+                        <div style="color: var(--text-light);">
+                            <strong style="color: var(--text-dark);">陳志強</strong> 分享了淨灘照片
+                            <div style="font-size: 0.8rem; margin-top: 2px;">6 小時前</div>
+                        </div>
+                        <div style="color: var(--text-light);">
+                            <strong style="color: var(--text-dark);">林雅婷</strong> 參與了新活動
+                            <div style="font-size: 0.8rem; margin-top: 2px;">1 天前</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 社群導航切換
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const sections = {
+                '👥志工排行榜': 'leaderboard',
+                '💬討論論壇': 'forum',
+                '🏆成就系統': 'achievements',
+                '📸分享牆': 'share'
+            };
+
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active狀態
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // 隱藏所有section
+                    Object.values(sections).forEach(sectionId => {
+                        const element = document.getElementById(sectionId);
+                        if (element) {
+                            element.style.display = 'none';
+                        }
+                    });
+
+                    // 顯示對應section
+                    const tabText = this.textContent.trim();
+                    const targetSection = sections[tabText];
+                    if (targetSection) {
+                        const element = document.getElementById(targetSection);
+                        if (element) {
+                            element.style.display = 'block';
+                        }
+                    } else {
+                        // 對於成就系統和分享牆，顯示對應的section
+                        if (tabText.includes('成就')) {
+                            document.querySelector('.achievements-section').style.display = 'block';
+                        } else if (tabText.includes('分享')) {
+                            document.querySelector('.share-section').style.display = 'block';
+                        }
+                    }
+                });
+            });
+
+            // 討論發布
+            const forumForm = document.querySelector('.forum-section .content-form');
+            if (forumForm) {
+                forumForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('討論發布功能將在實際開發時實作');
+                });
+            }
+
+            // 分享發布
+            const shareForm = document.querySelector('.share-section .content-form');
+            if (shareForm) {
+                shareForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('分享發布功能將在實際開發時實作');
+                });
+            }
+
+            // 點讚功能
+            document.querySelectorAll('.share-likes').forEach(like => {
+                like.addEventListener('click', function() {
+                    const count = parseInt(this.textContent.trim());
+                    this.innerHTML = `<span>❤️</span>${count + 1}`;
+                    this.style.color = 'var(--coral)';
+                });
+            });
+
+            // 討論互動
+            document.querySelectorAll('.post-action').forEach(action => {
+                action.addEventListener('click', function() {
+                    console.log('討論互動:', this.textContent.trim());
+                });
+            });
+
+            // 志工卡片互動
+            document.querySelectorAll('.volunteer-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const name = this.querySelector('.volunteer-name').textContent;
+                    console.log('查看志工檔案:', name);
+                });
+            });
+
+            // 成就卡片互動
+            document.querySelectorAll('.achievement-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.achievement-title').textContent;
+                    console.log('查看成就詳情:', title);
+                });
+            });
+
+            // 滾動動畫
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.volunteer-card, .forum-post, .share-post').forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

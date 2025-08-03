@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淨灘資訊平台 - 守護海洋從淨灘開始</title>
+    <style>
+        /* Liquid Glass 設計系統 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: rgba(0, 0, 0, 0.1);
+            --ocean-blue: #2563eb;
+            --ocean-light: #60a5fa;
+            --coral: #f97316;
+            --sand: #fef3c7;
+            --seafoam: #10b981;
+            --sunset: #f59e0b;
+            --deep-blue: #1e40af;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--ocean-blue) 0%, var(--ocean-light) 50%, var(--seafoam) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Liquid Glass 效果 */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+        }
+
+        /* 導航列 */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ocean-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--ocean-blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--ocean-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--deep-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+        }
+
+        /* 主要內容區域 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+
+        /* 英雄區塊 */
+        .hero {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 24px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+        }
+
+        /* 內容卡片 */
+        .content-section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--text-dark);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            padding: 32px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--ocean-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* 活動輪播區域 */
+        .carousel-container {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .carousel {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding: 20px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .event-card {
+            min-width: 280px;
+            padding: 24px;
+            scroll-snap-align: start;
+            position: relative;
+        }
+
+        .event-date {
+            background: var(--coral);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .event-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .event-location {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .event-participants {
+            color: var(--seafoam);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* 即時狀況區域 */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .status-item {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .status-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--ocean-blue);
+            margin-bottom: 8px;
+        }
+
+        .status-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* 快速參與區域 */
+        .quick-join {
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--seafoam), var(--ocean-light));
+            color: white;
+        }
+
+        .quick-join h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .quick-join p {
+            margin-bottom: 24px;
+            opacity: 0.9;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-hero {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 100px 16px 40px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* 可訪問性改善 */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* 動畫效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar glass" role="navigation" aria-label="主要導航">
+        <div class="logo">
+            <span>🌊</span>
+            淨灘平台
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#" class="nav-link">首頁</a></li>
+            <li><a href="beach-cleanup-activities.html" class="nav-link">活動中心</a></li>
+            <li><a href="beach-cleanup-dashboard.html" class="nav-link">數據儀表板</a></li>
+            <li><a href="beach-cleanup-education.html" class="nav-link">教育資源</a></li>
+            <li><a href="beach-cleanup-community.html" class="nav-link">社群</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="#" class="btn btn-secondary">登入</a>
+            <a href="#" class="btn btn-primary">註冊</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- 英雄區塊 -->
+        <section class="hero animate-fade-in-up">
+            <h1>守護海洋從淨灘開始</h1>
+            <p>加入我們的行列，用行動保護美麗的海岸線。查找附近的淨灘活動，與志同道合的夥伴一起為地球盡一份心力。</p>
+            <div class="hero-actions">
+                <a href="#" class="btn btn-primary btn-hero">立即參與活動</a>
+                <a href="#" class="btn btn-secondary btn-hero glass-light">了解更多</a>
+            </div>
+        </section>
+
+        <!-- 最新活動輪播 -->
+        <section class="content-section" id="activities">
+            <h2 class="section-title">最新淨灘活動</h2>
+            <div class="carousel-container">
+                <div class="carousel">
+                    <article class="event-card glass">
+                        <div class="event-date">2024.08.10</div>
+                        <h3 class="event-title">淡水河口淨灘活動</h3>
+                        <p class="event-location">📍 新北市淡水區</p>
+                        <p class="event-participants">🙋‍♀️ 已有 45 人報名</p>
+                    </article>
+                    <article class="event-card glass">
+                        <div class="event-date">2024.08.12</div>
+                        <h3 class="event-title">墾丁國家公園海灘清理</h3>
+                        <p class="event-location">📍 屏東縣恆春鎮</p>
+                        <p class="event-participants">🙋‍♀️ 已有 32 人報名</p>
+                    </article>
+                    <article class="event-card glass">
+                        <div class="event-date">2024.08.15</div>
+                        <h3 class="event-title">花蓮七星潭淨灘</h3>
+                        <p class="event-location">📍 花蓮縣花蓮市</p>
+                        <p class="event-participants">🙋‍♀️ 已有 28 人報名</p>
+                    </article>
+                    <article class="event-card glass">
+                        <div class="event-date">2024.08.18</div>
+                        <h3 class="event-title">澎湖望安島環保行動</h3>
+                        <p class="event-location">📍 澎湖縣望安鄉</p>
+                        <p class="event-participants">🙋‍♀️ 已有 18 人報名</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- 即時海灘狀況 -->
+        <section class="content-section">
+            <h2 class="section-title">即時海灘狀況</h2>
+            <div class="status-grid">
+                <div class="status-item glass">
+                    <div class="status-number">156</div>
+                    <div class="status-label">本月活動場次</div>
+                </div>
+                <div class="status-item glass">
+                    <div class="status-number">2,847</div>
+                    <div class="status-label">參與志工人數</div>
+                </div>
+                <div class="status-item glass">
+                    <div class="status-number">12.3</div>
+                    <div class="status-label">清理垃圾噸數</div>
+                </div>
+                <div class="status-item glass">
+                    <div class="status-number">89</div>
+                    <div class="status-label">清理海灘數量</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心功能 -->
+        <section class="content-section">
+            <h2 class="section-title">平台核心功能</h2>
+            <div class="card-grid">
+                <article class="card glass">
+                    <div class="card-icon">🗓️</div>
+                    <h3>活動管理</h3>
+                    <p>輕鬆查找、報名淨灘活動，追蹤參與記錄，與其他志工交流心得。支援活動建立和管理功能。</p>
+                </article>
+                <article class="card glass">
+                    <div class="card-icon">📊</div>
+                    <h3>數據視覺化</h3>
+                    <p>即時查看海灘清理成果，垃圾種類統計，區域比較分析，了解環保行動的實際影響力。</p>
+                </article>
+                <article class="card glass">
+                    <div class="card-icon">🎓</div>
+                    <h3>教育資源</h3>
+                    <p>豐富的海洋保護知識庫，淨灘技巧指南，垃圾分類教學，提升環保意識和行動技能。</p>
+                </article>
+                <article class="card glass">
+                    <div class="card-icon">👥</div>
+                    <h3>社群互動</h3>
+                    <p>建立志工檔案，參與討論論壇，獲得成就徽章，分享淨灘心得，凝聚環保社群力量。</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- 快速參與 -->
+        <section class="content-section">
+            <div class="quick-join glass">
+                <h3>🌟 立即加入環保行動</h3>
+                <p>每一次的行動都能為海洋帶來改變，現在就開始你的環保旅程！</p>
+                <a href="#" class="btn btn-primary btn-hero">開始探索活動</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 簡單的互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 導航連結平滑滾動
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // 卡片hover效果增強
+            document.querySelectorAll('.card, .event-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // 滾動時觸發動畫
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.content-section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

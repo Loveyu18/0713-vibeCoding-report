@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數據儀表板 - 淨灘資訊平台</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 繼承 Liquid Glass 設計系統 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: rgba(0, 0, 0, 0.1);
+            --ocean-blue: #2563eb;
+            --ocean-light: #60a5fa;
+            --coral: #f97316;
+            --sand: #fef3c7;
+            --seafoam: #10b981;
+            --sunset: #f59e0b;
+            --deep-blue: #1e40af;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --success: #059669;
+            --warning: #d97706;
+            --error: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--ocean-blue) 0%, var(--ocean-light) 50%, var(--seafoam) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+        }
+
+        /* 導航列 */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ocean-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--ocean-blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--ocean-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--deep-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+        }
+
+        /* 主要內容 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 統計卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            padding: 24px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.blue { background: var(--ocean-blue); }
+        .stat-icon.green { background: var(--seafoam); }
+        .stat-icon.orange { background: var(--coral); }
+        .stat-icon.yellow { background: var(--sunset); }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--error);
+        }
+
+        /* 圖表區域 */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            padding: 32px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .chart-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .chart-filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--ocean-blue);
+            color: white;
+            border-color: var(--ocean-blue);
+        }
+
+        .chart-canvas {
+            max-height: 300px;
+        }
+
+        /* 排行榜 */
+        .leaderboard {
+            padding: 32px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .rank-number {
+            width: 32px;
+            height: 32px;
+            background: var(--ocean-light);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .rank-number.gold { background: #ffd700; color: #8b5a00; }
+        .rank-number.silver { background: #c0c0c0; color: #666; }
+        .rank-number.bronze { background: #cd7f32; color: white; }
+
+        .location-info {
+            flex: 1;
+        }
+
+        .location-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .location-details {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .cleanup-amount {
+            font-weight: 600;
+            color: var(--ocean-blue);
+        }
+
+        /* 趨勢分析 */
+        .trends-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        /* 地圖區域 */
+        .map-section {
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+
+        .map-placeholder {
+            height: 400px;
+            background: linear-gradient(45deg, var(--ocean-light), var(--seafoam));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .map-legend {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 1024px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .trends-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .map-overlay {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 100px 16px 40px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+
+        /* 動畫效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card {
+            animation: countUp 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar glass" role="navigation" aria-label="主要導航">
+        <a href="beach-cleanup-homepage.html" class="logo">
+            <span>🌊</span>
+            淨灘平台
+        </a>
+        <ul class="nav-menu">
+            <li><a href="beach-cleanup-homepage.html" class="nav-link">首頁</a></li>
+            <li><a href="beach-cleanup-activities.html" class="nav-link">活動中心</a></li>
+            <li><a href="#" class="nav-link active">數據儀表板</a></li>
+            <li><a href="beach-cleanup-education.html" class="nav-link">教育資源</a></li>
+            <li><a href="beach-cleanup-community.html" class="nav-link">社群</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="#" class="btn btn-secondary">登入</a>
+            <a href="#" class="btn btn-primary">註冊</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- 頁面標題 -->
+        <header class="page-header animate-fade-in-up">
+            <h1 class="page-title">數據儀表板</h1>
+            <p class="page-subtitle">即時追蹤淨灘成果，了解台灣海岸環境保護進度</p>
+        </header>
+
+        <!-- 統計概覽 -->
+        <section class="stats-grid">
+            <div class="stat-card glass">
+                <div class="stat-icon blue">📊</div>
+                <div class="stat-number" data-target="2847">0</div>
+                <div class="stat-label">累計參與人次</div>
+                <div class="stat-change positive">↗ 比上月增加 23%</div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon green">♻️</div>
+                <div class="stat-number" data-target="156">0</div>
+                <div class="stat-label">本月活動場次</div>
+                <div class="stat-change positive">↗ 比上月增加 12%</div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon orange">🗑️</div>
+                <div class="stat-number" data-target="12.3">0</div>
+                <div class="stat-label">清理垃圾總量(噸)</div>
+                <div class="stat-change positive">↗ 比上月增加 18%</div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon yellow">🏖️</div>
+                <div class="stat-number" data-target="89">0</div>
+                <div class="stat-label">覆蓋海灘數量</div>
+                <div class="stat-change positive">↗ 新增 7 個海灘</div>
+            </div>
+        </section>
+
+        <!-- 主要圖表區域 -->
+        <section class="charts-section">
+            <div class="chart-container glass">
+                <div class="chart-header">
+                    <div>
+                        <h3 class="chart-title">月度清理成果趨勢</h3>
+                        <p class="chart-subtitle">過去12個月的垃圾清理量統計</p>
+                    </div>
+                    <div class="chart-filters">
+                        <button class="filter-btn active">重量</button>
+                        <button class="filter-btn">件數</button>
+                        <button class="filter-btn">參與人數</button>
+                    </div>
+                </div>
+                <canvas id="trendChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container glass">
+                <div class="chart-header">
+                    <div>
+                        <h3 class="chart-title">頂級清理地點</h3>
+                        <p class="chart-subtitle">本月清理量排行榜</p>
+                    </div>
+                </div>
+                <div class="leaderboard">
+                    <div class="leaderboard-item">
+                        <div class="rank-number gold">1</div>
+                        <div class="location-info">
+                            <div class="location-name">淡水河口</div>
+                            <div class="location-details">新北市 • 6次活動</div>
+                        </div>
+                        <div class="cleanup-amount">2.4噸</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank-number silver">2</div>
+                        <div class="location-info">
+                            <div class="location-name">墾丁國家公園</div>
+                            <div class="location-details">屏東縣 • 4次活動</div>
+                        </div>
+                        <div class="cleanup-amount">1.8噸</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank-number bronze">3</div>
+                        <div class="location-info">
+                            <div class="location-name">七星潭</div>
+                            <div class="location-details">花蓮縣 • 3次活動</div>
+                        </div>
+                        <div class="cleanup-amount">1.5噸</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank-number">4</div>
+                        <div class="location-info">
+                            <div class="location-name">旗津海水浴場</div>
+                            <div class="location-details">高雄市 • 5次活動</div>
+                        </div>
+                        <div class="cleanup-amount">1.2噸</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank-number">5</div>
+                        <div class="location-info">
+                            <div class="location-name">杉原海水浴場</div>
+                            <div class="location-details">台東縣 • 2次活動</div>
+                        </div>
+                        <div class="cleanup-amount">0.9噸</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趨勢分析 -->
+        <section class="trends-grid">
+            <div class="chart-container glass">
+                <div class="chart-header">
+                    <div>
+                        <h3 class="chart-title">垃圾種類分布</h3>
+                        <p class="chart-subtitle">本月收集的垃圾類型統計</p>
+                    </div>
+                </div>
+                <canvas id="wasteTypeChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container glass">
+                <div class="chart-header">
+                    <div>
+                        <h3 class="chart-title">參與者年齡分布</h3>
+                        <p class="chart-subtitle">志工年齡結構分析</p>
+                    </div>
+                </div>
+                <canvas id="ageDistributionChart" class="chart-canvas"></canvas>
+            </div>
+        </section>
+
+        <!-- 地圖視覺化 -->
+        <section class="map-section glass">
+            <div class="chart-header">
+                <div>
+                    <h3 class="chart-title">全台海岸清理狀況</h3>
+                    <p class="chart-subtitle">互動式地圖顯示各地區活動分布</p>
+                </div>
+                <div class="chart-filters">
+                    <button class="filter-btn active">本月</button>
+                    <button class="filter-btn">本季</button>
+                    <button class="filter-btn">本年</button>
+                </div>
+            </div>
+            
+            <div class="map-placeholder">
+                <div class="map-overlay">
+                    <div class="map-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #10b981;"></div>
+                            <span>高活動區域</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f59e0b;"></div>
+                            <span>中等活動區域</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ef4444;"></div>
+                            <span>需關注區域</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <p>🗺️ 互動式地圖將在實際開發時整合</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px; opacity: 0.8;">
+                        顯示全台海岸線活動分布、清理成果熱點圖
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 數字動畫效果
+            function animateNumbers() {
+                const counters = document.querySelectorAll('.stat-number[data-target]');
+                
+                counters.forEach(counter => {
+                    const target = parseFloat(counter.getAttribute('data-target'));
+                    const duration = 2000;
+                    const increment = target / (duration / 16);
+                    let current = 0;
+                    
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        
+                        if (target % 1 !== 0) {
+                            counter.textContent = current.toFixed(1);
+                        } else {
+                            counter.textContent = Math.floor(current).toLocaleString();
+                        }
+                    }, 16);
+                });
+            }
+
+            // 月度趨勢圖表
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    datasets: [{
+                        label: '清理重量 (噸)',
+                        data: [8.2, 6.5, 9.1, 11.3, 10.8, 12.5, 15.2, 14.1, 13.8, 16.2, 12.3, 0],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 垃圾種類分布圖表
+            const wasteTypeCtx = document.getElementById('wasteTypeChart').getContext('2d');
+            new Chart(wasteTypeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['塑膠瓶', '塑膠袋', '菸蒂', '食品包裝', '漁具', '其他'],
+                    datasets: [{
+                        data: [35, 28, 15, 12, 6, 4],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#10b981',
+                            '#f59e0b',
+                            '#f97316',
+                            '#8b5cf6',
+                            '#6b7280'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 年齡分布圖表
+            const ageCtx = document.getElementById('ageDistributionChart').getContext('2d');
+            new Chart(ageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['18-25', '26-35', '36-45', '46-55', '56-65', '65+'],
+                    datasets: [{
+                        label: '參與人數',
+                        data: [450, 680, 520, 380, 280, 150],
+                        backgroundColor: [
+                            '#60a5fa',
+                            '#34d399',
+                            '#fbbf24',
+                            '#fb7185',
+                            '#a78bfa',
+                            '#94a3b8'
+                        ],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 篩選按鈕功能
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const parent = this.closest('.chart-header') || this.closest('.map-section');
+                    parent.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    console.log('篩選:', this.textContent);
+                });
+            });
+
+            // 啟動數字動畫
+            setTimeout(animateNumbers, 500);
+
+            // 滾動動畫
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.chart-container, .map-section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

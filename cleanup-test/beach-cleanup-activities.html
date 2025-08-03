@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活動中心 - 淨灘資訊平台</title>
+    <style>
+        /* 繼承首頁的 Liquid Glass 設計系統 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: rgba(0, 0, 0, 0.1);
+            --ocean-blue: #2563eb;
+            --ocean-light: #60a5fa;
+            --coral: #f97316;
+            --sand: #fef3c7;
+            --seafoam: #10b981;
+            --sunset: #f59e0b;
+            --deep-blue: #1e40af;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --success: #059669;
+            --warning: #d97706;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--ocean-blue) 0%, var(--ocean-light) 50%, var(--seafoam) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+        }
+
+        /* 導航列 */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ocean-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--ocean-blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--ocean-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--deep-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+        }
+
+        /* 主要內容 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 搜尋和篩選區域 */
+        .search-section {
+            margin-bottom: 40px;
+            padding: 32px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 12px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--ocean-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--ocean-blue);
+            color: white;
+            border-color: var(--ocean-blue);
+        }
+
+        .location-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .location-tag {
+            padding: 4px 12px;
+            background: var(--sand);
+            border-radius: 16px;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .location-tag:hover, .location-tag.active {
+            background: var(--sunset);
+            color: white;
+        }
+
+        /* 活動列表 */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .activity-card {
+            padding: 24px;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .activity-date {
+            background: var(--coral);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .activity-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-open {
+            background: var(--seafoam);
+            color: white;
+        }
+
+        .status-full {
+            background: var(--warning);
+            color: white;
+        }
+
+        .status-closed {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .activity-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .activity-location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .activity-organizer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .organizer-avatar {
+            width: 24px;
+            height: 24px;
+            background: var(--ocean-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .activity-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-light);
+        }
+
+        .stat-number {
+            font-weight: 600;
+            color: var(--ocean-blue);
+        }
+
+        .activity-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .activity-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+
+        .btn-join {
+            background: var(--seafoam);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-join:hover {
+            background: var(--success);
+        }
+
+        .btn-details {
+            background: transparent;
+            color: var(--ocean-blue);
+            border: 1px solid var(--ocean-blue);
+        }
+
+        .btn-details:hover {
+            background: var(--ocean-blue);
+            color: white;
+        }
+
+        /* 分頁導航 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover, .pagination-btn.active {
+            background: var(--ocean-blue);
+            color: white;
+            border-color: var(--ocean-blue);
+        }
+
+        /* 快速操作區域 */
+        .quick-actions {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            background: var(--coral);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-input {
+                min-width: auto;
+            }
+
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .activity-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 100px 16px 40px;
+            }
+
+            .search-section {
+                padding: 20px;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+
+            .location-filters {
+                justify-content: center;
+            }
+        }
+
+        /* 動畫效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar glass" role="navigation" aria-label="主要導航">
+        <a href="beach-cleanup-homepage.html" class="logo">
+            <span>🌊</span>
+            淨灘平台
+        </a>
+        <ul class="nav-menu">
+            <li><a href="beach-cleanup-homepage.html" class="nav-link">首頁</a></li>
+            <li><a href="#" class="nav-link active">活動中心</a></li>
+            <li><a href="beach-cleanup-dashboard.html" class="nav-link">數據儀表板</a></li>
+            <li><a href="beach-cleanup-education.html" class="nav-link">教育資源</a></li>
+            <li><a href="beach-cleanup-community.html" class="nav-link">社群</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="#" class="btn btn-secondary">登入</a>
+            <a href="#" class="btn btn-primary">註冊</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- 頁面標題 -->
+        <header class="page-header animate-fade-in-up">
+            <h1 class="page-title">活動中心</h1>
+            <p class="page-subtitle">探索全台各地的淨灘活動，找到適合你的環保行動機會</p>
+        </header>
+
+        <!-- 搜尋和篩選 -->
+        <section class="search-section glass">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="搜尋活動名稱、地點或關鍵字..." aria-label="搜尋活動">
+                <button class="btn btn-primary">搜尋</button>
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active">全部活動</button>
+                <button class="filter-btn">報名中</button>
+                <button class="filter-btn">即將開始</button>
+                <button class="filter-btn">本週活動</button>
+                <button class="filter-btn">需要志工</button>
+            </div>
+
+            <div class="location-filters">
+                <span class="location-tag active">全台灣</span>
+                <span class="location-tag">北部</span>
+                <span class="location-tag">中部</span>
+                <span class="location-tag">南部</span>
+                <span class="location-tag">東部</span>
+                <span class="location-tag">離島</span>
+            </div>
+        </section>
+
+        <!-- 活動列表 -->
+        <section class="activities-grid">
+            <article class="activity-card glass animate-fade-in-up">
+                <div class="activity-header">
+                    <div class="activity-date">08/10 週六</div>
+                    <div class="activity-status status-open">報名中</div>
+                </div>
+                <h3 class="activity-title">淡水河口淨灘活動</h3>
+                <div class="activity-location">
+                    <span>📍</span>
+                    <span>新北市淡水區淡水河口</span>
+                </div>
+                <div class="activity-organizer">
+                    <div class="organizer-avatar">環</div>
+                    <span>台北環保志工協會</span>
+                </div>
+                <div class="activity-stats">
+                    <div class="stat-item">
+                        <span>👥</span>
+                        <span class="stat-number">45</span>
+                        <span>/ 60 人</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>⏰</span>
+                        <span>09:00 - 12:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>🎯</span>
+                        <span>初學者友善</span>
+                    </div>
+                </div>
+                <p class="activity-description">
+                    清理淡水河口海岸線，保護濕地生態環境。活動提供清潔工具、手套，歡迎親子一同參與。
+                </p>
+                <div class="activity-actions">
+                    <button class="btn btn-join btn-small">立即報名</button>
+                    <button class="btn btn-details btn-small">查看詳情</button>
+                </div>
+            </article>
+
+            <article class="activity-card glass animate-fade-in-up">
+                <div class="activity-header">
+                    <div class="activity-date">08/12 週一</div>
+                    <div class="activity-status status-open">報名中</div>
+                </div>
+                <h3 class="activity-title">墾丁國家公園海灘清理</h3>
+                <div class="activity-location">
+                    <span>📍</span>
+                    <span>屏東縣恆春鎮墾丁大街</span>
+                </div>
+                <div class="activity-organizer">
+                    <div class="organizer-avatar">墾</div>
+                    <span>墾丁國家公園管理處</span>
+                </div>
+                <div class="activity-stats">
+                    <div class="stat-item">
+                        <span>👥</span>
+                        <span class="stat-number">32</span>
+                        <span>/ 50 人</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>⏰</span>
+                        <span>07:00 - 11:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>🎯</span>
+                        <span>進階參與</span>
+                    </div>
+                </div>
+                <p class="activity-description">
+                    配合國家公園保育計劃，清理海龜產卵棲地，維護珊瑚礁生態系統。提供專業導覽解說。
+                </p>
+                <div class="activity-actions">
+                    <button class="btn btn-join btn-small">立即報名</button>
+                    <button class="btn btn-details btn-small">查看詳情</button>
+                </div>
+            </article>
+
+            <article class="activity-card glass animate-fade-in-up">
+                <div class="activity-header">
+                    <div class="activity-date">08/15 週四</div>
+                    <div class="activity-status status-open">報名中</div>
+                </div>
+                <h3 class="activity-title">花蓮七星潭淨灘</h3>
+                <div class="activity-location">
+                    <span>📍</span>
+                    <span>花蓮縣花蓮市七星潭</span>
+                </div>
+                <div class="activity-organizer">
+                    <div class="organizer-avatar">花</div>
+                    <span>花蓮縣環境保護局</span>
+                </div>
+                <div class="activity-stats">
+                    <div class="stat-item">
+                        <span>👥</span>
+                        <span class="stat-number">28</span>
+                        <span>/ 40 人</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>⏰</span>
+                        <span>16:00 - 18:30</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>🎯</span>
+                        <span>攝影活動</span>
+                    </div>
+                </div>
+                <p class="activity-description">
+                    夕陽時分的淨灘活動，結合環保與攝影，記錄美麗海岸線的保護行動。歡迎攝影愛好者參與。
+                </p>
+                <div class="activity-actions">
+                    <button class="btn btn-join btn-small">立即報名</button>
+                    <button class="btn btn-details btn-small">查看詳情</button>
+                </div>
+            </article>
+
+            <article class="activity-card glass animate-fade-in-up">
+                <div class="activity-header">
+                    <div class="activity-date">08/18 週日</div>
+                    <div class="activity-status status-full">名額已滿</div>
+                </div>
+                <h3 class="activity-title">澎湖望安島環保行動</h3>
+                <div class="activity-location">
+                    <span>📍</span>
+                    <span>澎湖縣望安鄉網垵口沙灘</span>
+                </div>
+                <div class="activity-organizer">
+                    <div class="organizer-avatar">澎</div>
+                    <span>澎湖海洋保育協會</span>
+                </div>
+                <div class="activity-stats">
+                    <div class="stat-item">
+                        <span>👥</span>
+                        <span class="stat-number">25</span>
+                        <span>/ 25 人</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>⏰</span>
+                        <span>08:00 - 17:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>🎯</span>
+                        <span>專業培訓</span>
+                    </div>
+                </div>
+                <p class="activity-description">
+                    離島深度環保行動，包含海洋廢棄物調查、數據收集和生態教育。提供專業海洋保育培訓課程。
+                </p>
+                <div class="activity-actions">
+                    <button class="btn btn-secondary btn-small" disabled>候補報名</button>
+                    <button class="btn btn-details btn-small">查看詳情</button>
+                </div>
+            </article>
+
+            <article class="activity-card glass animate-fade-in-up">
+                <div class="activity-header">
+                    <div class="activity-date">08/20 週二</div>
+                    <div class="activity-status status-open">報名中</div>
+                </div>
+                <h3 class="activity-title">高雄旗津海岸清潔日</h3>
+                <div class="activity-location">
+                    <span>📍</span>
+                    <span>高雄市旗津區旗津海水浴場</span>
+                </div>
+                <div class="activity-organizer">
+                    <div class="organizer-avatar">高</div>
+                    <span>高雄市海洋局</span>
+                </div>
+                <div class="activity-stats">
+                    <div class="stat-item">
+                        <span>👥</span>
+                        <span class="stat-number">15</span>
+                        <span>/ 80 人</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>⏰</span>
+                        <span>14:00 - 17:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>🎯</span>
+                        <span>企業合作</span>
+                    </div>
+                </div>
+                <p class="activity-description">
+                    大型海岸清潔活動，與在地企業合作，提供交通接駁、餐點補給。適合大團體參與。
+                </p>
+                <div class="activity-actions">
+                    <button class="btn btn-join btn-small">立即報名</button>
+                    <button class="btn btn-details btn-small">查看詳情</button>
+                </div>
+            </article>
+
+            <article class="activity-card glass animate-fade-in-up">
+                <div class="activity-header">
+                    <div class="activity-date">08/22 週四</div>
+                    <div class="activity-status status-open">報名中</div>
+                </div>
+                <h3 class="activity-title">台東杉原海岸守護行動</h3>
+                <div class="activity-location">
+                    <span>📍</span>
+                    <span>台東縣卑南鄉杉原海水浴場</span>
+                </div>
+                <div class="activity-organizer">
+                    <div class="organizer-avatar">台</div>
+                    <span>台東環境守護聯盟</span>
+                </div>
+                <div class="activity-stats">
+                    <div class="stat-item">
+                        <span>👥</span>
+                        <span class="stat-number">8</span>
+                        <span>/ 30 人</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>⏰</span>
+                        <span>06:00 - 10:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>🎯</span>
+                        <span>生態調查</span>
+                    </div>
+                </div>
+                <p class="activity-description">
+                    結合海岸清理與生物多樣性調查，記錄原住民傳統海岸利用智慧，深度環境教育體驗。
+                </p>
+                <div class="activity-actions">
+                    <button class="btn btn-join btn-small">立即報名</button>
+                    <button class="btn btn-details btn-small">查看詳情</button>
+                </div>
+            </article>
+        </section>
+
+        <!-- 分頁導航 -->
+        <nav class="pagination" aria-label="分頁導航">
+            <button class="pagination-btn">‹</button>
+            <button class="pagination-btn active">1</button>
+            <button class="pagination-btn">2</button>
+            <button class="pagination-btn">3</button>
+            <button class="pagination-btn">4</button>
+            <button class="pagination-btn">5</button>
+            <button class="pagination-btn">›</button>
+        </nav>
+    </main>
+
+    <!-- 快速操作按鈕 -->
+    <div class="quick-actions">
+        <button class="fab" title="建立新活動" aria-label="建立新活動">+</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 搜尋功能
+            const searchInput = document.querySelector('.search-input');
+            const searchBtn = document.querySelector('.btn-primary');
+            
+            searchBtn.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                if (query) {
+                    console.log('搜尋:', query);
+                    // 實際實作時會連接到後端 API
+                }
+            });
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+
+            // 篩選按鈕
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    console.log('篩選:', this.textContent);
+                });
+            });
+
+            // 地區標籤
+            document.querySelectorAll('.location-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    document.querySelectorAll('.location-tag').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    console.log('地區:', this.textContent);
+                });
+            });
+
+            // 活動卡片互動
+            document.querySelectorAll('.activity-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // 報名按鈕
+            document.querySelectorAll('.btn-join').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!this.disabled) {
+                        alert('報名功能將在實際開發時實作');
+                    }
+                });
+            });
+
+            // 詳情按鈕
+            document.querySelectorAll('.btn-details').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('活動詳情頁面將在實際開發時實作');
+                });
+            });
+
+            // 分頁按鈕
+            document.querySelectorAll('.pagination-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!this.classList.contains('active')) {
+                        document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
+                        if (!isNaN(this.textContent)) {
+                            this.classList.add('active');
+                        }
+                        console.log('分頁:', this.textContent);
+                    }
+                });
+            });
+
+            // 建立活動按鈕
+            document.querySelector('.fab').addEventListener('click', function() {
+                alert('建立活動功能將在實際開發時實作');
+            });
+
+            // 滾動動畫
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.activity-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
